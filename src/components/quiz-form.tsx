@@ -13,7 +13,7 @@ import type { Question } from '@/lib/quiz-data';
 
 type UserQuestion = {
   question: string;
-  options: string[];
+  option: string[];
   answer: string;
   explanation: string;
 };
@@ -38,16 +38,16 @@ export function QuizForm() {
       }
 
       const formattedQuestions = data.map((q, index) => {
-        if (!q.question || !q.options || !q.answer || !q.explanation) {
-            throw new Error(`Question at index ${index} is missing required fields (question, options, answer, explanation).`);
+        if (!q.question || !q.option || !q.answer || !q.explanation) {
+            throw new Error(`Question at index ${index} is missing required fields (question, option, answer, explanation).`);
         }
-        if (!Array.isArray(q.options) || q.options.length === 0) {
+        if (!Array.isArray(q.option) || q.option.length === 0) {
           throw new Error(`Question "${q.question}" must have at least one option.`);
         }
         return {
           id: index + 1,
           question: q.question,
-          options: q.options,
+          options: q.option,
           correctAnswer: q.answer,
           explanation: q.explanation,
         };
@@ -114,7 +114,7 @@ export function QuizForm() {
             id="json-input"
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
-            placeholder='[{"question": "...", "options": ["..."], "answer": "...", "explanation": "..."}]'
+            placeholder='[{"question": "...", "option": ["..."], "answer": "...", "explanation": "..."}]'
             rows={10}
           />
         </div>
