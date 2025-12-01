@@ -1,4 +1,4 @@
-import { Quiz } from '@/components/quiz';
+import { QuizForm } from '@/components/quiz-form';
 
 export default function Home() {
   return (
@@ -7,7 +7,7 @@ export default function Home() {
         <h1 className="text-4xl font-headline font-bold text-center mb-8 text-primary dark:text-primary-foreground">
           QuizWhiz
         </h1>
-        <Quiz />
+        <QuizForm />
       </div>
     </main>
   );

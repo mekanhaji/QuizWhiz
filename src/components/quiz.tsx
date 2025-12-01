@@ -1,15 +1,20 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
-import { quizQuestions, type Question } from '@/lib/quiz-data';
+import type { Question } from '@/lib/quiz-data';
 import { QuestionCard, QuestionCardSkeleton } from '@/components/question-card';
 import { ScoreCard } from '@/components/score-card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, RotateCcw } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
-export function Quiz() {
+type QuizProps = {
+  questions: Question[];
+  onRestartQuiz: () => void;
+};
+
+export function Quiz({ questions: initialQuestions, onRestartQuiz }: QuizProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -19,9 +24,9 @@ export function Quiz() {
 
   useEffect(() => {
     // Shuffle questions on component mount on the client-side to avoid hydration mismatch
-    const shuffledQuestions = [...quizQuestions].sort(() => Math.random() - 0.5);
+    const shuffledQuestions = [...initialQuestions].sort(() => Math.random() - 0.5);
     setQuestions(shuffledQuestions);
-  }, []);
+  }, [initialQuestions]);
 
   const currentQuestion = useMemo(() => questions[currentQuestionIndex], [questions, currentQuestionIndex]);
   const progressValue = useMemo(() => questions.length > 0 ? ((currentQuestionIndex) / questions.length) * 100 : 0, [currentQuestionIndex, questions.length]);
@@ -54,7 +59,7 @@ export function Quiz() {
   };
 
   const handleRestart = () => {
-    const shuffledQuestions = [...quizQuestions].sort(() => Math.random() - 0.5);
+    const shuffledQuestions = [...initialQuestions].sort(() => Math.random() - 0.5);
     setQuestions(shuffledQuestions);
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
@@ -79,12 +84,18 @@ export function Quiz() {
 
   return (
     <div className="space-y-4">
-      <div className="px-4">
-        <div className="flex justify-between items-center mb-1">
-            <span className="text-sm text-muted-foreground">Question {currentQuestionIndex + 1} of {questions.length}</span>
-            <span className="text-sm font-semibold text-primary">{Math.round(progressValue)}%</span>
+      <div className='flex justify-between items-center px-4'>
+        <div className="flex-1">
+            <div className="flex justify-between items-center mb-1">
+                <span className="text-sm text-muted-foreground">Question {currentQuestionIndex + 1} of {questions.length}</span>
+                <span className="text-sm font-semibold text-primary">{Math.round(progressValue)}%</span>
+            </div>
+            <Progress value={progressValue} className="h-2" />
         </div>
-        <Progress value={progressValue} className="h-2" />
+        <Button variant="ghost" size="icon" className="ml-4" onClick={onRestartQuiz}>
+            <RotateCcw className="h-4 w-4" />
+            <span className="sr-only">Start New Quiz</span>
+        </Button>
       </div>
       <QuestionCard
         key={currentQuestionIndex}
