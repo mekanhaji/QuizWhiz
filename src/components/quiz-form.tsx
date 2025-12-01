@@ -1,15 +1,24 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Upload } from 'lucide-react';
+import { AlertCircle, Upload, Save, Trash2, Rocket } from 'lucide-react';
 import { Quiz } from './quiz';
 import type { Question } from '@/lib/quiz-data';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog"
+
 
 type UserQuestion = {
   question: string;
@@ -18,47 +27,77 @@ type UserQuestion = {
   explanation: string;
 };
 
+type SavedQuiz = {
+  name: string;
+  json: string;
+};
+
 export function QuizForm() {
   const [jsonInput, setJsonInput] = useState('');
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [savedQuizzes, setSavedQuizzes] = useState<SavedQuiz[]>([]);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [quizName, setQuizName] = useState("");
 
-  const parseAndStartQuiz = (jsonString: string) => {
+  useEffect(() => {
+    try {
+      const storedQuizzes = localStorage.getItem('savedQuizzes');
+      if (storedQuizzes) {
+        setSavedQuizzes(JSON.parse(storedQuizzes));
+      }
+    } catch (e) {
+      console.error("Failed to load quizzes from localStorage", e);
+    }
+  }, []);
+
+  const validateJson = (jsonString: string): boolean => {
     try {
       if (!jsonString.trim()) {
         setError("JSON data cannot be empty.");
-        return;
+        return false;
       }
       const data: UserQuestion[] = JSON.parse(jsonString);
       
       if (!Array.isArray(data) || data.length === 0) {
         setError("Invalid JSON format. Expected a non-empty array of questions.");
-        return;
+        return false;
       }
 
-      const formattedQuestions = data.map((q, index) => {
+      for (let i = 0; i < data.length; i++) {
+        const q = data[i];
         if (!q.question || !q.option || !q.answer || !q.explanation) {
-            throw new Error(`Question at index ${index} is missing required fields (question, option, answer, explanation).`);
+          throw new Error(`Question at index ${i} is missing required fields (question, option, answer, explanation).`);
         }
         if (!Array.isArray(q.option) || q.option.length === 0) {
           throw new Error(`Question "${q.question}" must have at least one option.`);
         }
-        return {
-          id: index + 1,
-          question: q.question,
-          options: q.option,
-          correctAnswer: q.answer,
-          explanation: q.explanation,
-        };
-      });
-
-      setQuestions(formattedQuestions);
+      }
       setError(null);
+      return true;
     } catch (e: any) {
       setError(`Failed to parse JSON: ${e.message}`);
-      setQuestions(null);
+      return false;
     }
+  }
+
+  const parseAndStartQuiz = (jsonString: string) => {
+    if (!validateJson(jsonString)) {
+        setQuestions(null);
+        return;
+    }
+    const data: UserQuestion[] = JSON.parse(jsonString);
+    const formattedQuestions = data.map((q, index) => ({
+      id: index + 1,
+      question: q.question,
+      options: q.option,
+      correctAnswer: q.answer,
+      explanation: q.explanation,
+    }));
+
+    setQuestions(formattedQuestions);
+    setError(null);
   };
 
   const handleStartQuiz = () => {
@@ -72,7 +111,9 @@ export function QuizForm() {
       reader.onload = (e) => {
         const text = e.target?.result as string;
         setJsonInput(text);
-        parseAndStartQuiz(text);
+        if(validateJson(text)) {
+            parseAndStartQuiz(text);
+        }
       };
       reader.readAsText(file);
     }
@@ -84,15 +125,51 @@ export function QuizForm() {
   
   const handleRestart = () => {
     setQuestions(null);
-    setJsonInput('');
-    setError(null);
+    // Keep jsonInput and error for user to see
   }
+
+  const handleOpenSaveDialog = () => {
+    if (validateJson(jsonInput)) {
+      setIsSaveModalOpen(true);
+    }
+  }
+
+  const handleSaveQuiz = () => {
+    if (!quizName.trim()) {
+        alert("Please enter a name for the quiz.");
+        return;
+    }
+    const newQuiz: SavedQuiz = { name: quizName, json: jsonInput };
+    const updatedQuizzes = [...savedQuizzes, newQuiz];
+    setSavedQuizzes(updatedQuizzes);
+    localStorage.setItem('savedQuizzes', JSON.stringify(updatedQuizzes));
+    setIsSaveModalOpen(false);
+    setQuizName("");
+  };
+
+  const loadQuiz = (json: string) => {
+    setJsonInput(json);
+    setError(null);
+  };
+  
+  const startSavedQuiz = (json: string) => {
+    loadQuiz(json);
+    parseAndStartQuiz(json);
+  };
+
+  const deleteQuiz = (quizNameToDelete: string) => {
+    const updatedQuizzes = savedQuizzes.filter(q => q.name !== quizNameToDelete);
+    setSavedQuizzes(updatedQuizzes);
+    localStorage.setItem('savedQuizzes', JSON.stringify(updatedQuizzes));
+  };
+
 
   if (questions) {
     return <Quiz questions={questions} onRestartQuiz={handleRestart} />;
   }
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle>Create Your Quiz</CardTitle>
@@ -113,38 +190,81 @@ export function QuizForm() {
           <Textarea
             id="json-input"
             value={jsonInput}
-            onChange={(e) => setJsonInput(e.target.value)}
+            onChange={(e) => {
+                setJsonInput(e.target.value);
+                setError(null); // Clear error on edit
+            }}
             placeholder='[{"question": "...", "option": ["..."], "answer": "...", "explanation": "..."}]'
-            rows={10}
+            rows={8}
           />
         </div>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">
-              Or
-            </span>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" className="w-full" onClick={handleOpenSaveDialog} disabled={!jsonInput}>
+                <Save className="mr-2 h-4 w-4" />
+                Save Quiz
+            </Button>
+            <Button variant="outline" className="w-full" onClick={handleUploadClick}>
+                <Upload className="mr-2 h-4 w-4" />
+                Upload JSON
+            </Button>
         </div>
-        <Button variant="outline" className="w-full" onClick={handleUploadClick}>
-          <Upload className="mr-2 h-4 w-4" />
-          Upload JSON File
-        </Button>
-        <Input 
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept=".json"
-            onChange={handleFileChange}
-        />
       </CardContent>
       <CardFooter>
         <Button className="w-full" onClick={handleStartQuiz} disabled={!jsonInput}>
+          <Rocket className="mr-2 h-4 w-4" />
           Start Quiz
         </Button>
       </CardFooter>
     </Card>
+
+    {savedQuizzes.length > 0 && (
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Saved Quizzes</CardTitle>
+          <CardDescription>Load a previously saved quiz to start or edit it.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-3">
+            {savedQuizzes.map((quiz, index) => (
+              <li key={index} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+                <span className="font-medium flex-1 mb-2 sm:mb-0">{quiz.name}</span>
+                <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" onClick={() => loadQuiz(quiz.json)}>Load</Button>
+                    <Button size="sm" onClick={() => startSavedQuiz(quiz.json)}>Start</Button>
+                    <Button variant="destructive" size="icon" onClick={() => deleteQuiz(quiz.name)}>
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete {quiz.name}</span>
+                    </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+    )}
+
+    <Dialog open={isSaveModalOpen} onOpenChange={setIsSaveModalOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Save Quiz</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+                <Label htmlFor="quiz-name">Quiz Name</Label>
+                <Input 
+                    id="quiz-name"
+                    value={quizName}
+                    onChange={(e) => setQuizName(e.target.value)}
+                    placeholder="e.g., General Knowledge"
+                />
+            </div>
+            <DialogFooter>
+                <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button onClick={handleSaveQuiz}>Save</Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }

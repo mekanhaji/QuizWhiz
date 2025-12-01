@@ -6,7 +6,7 @@ import { QuestionCard, QuestionCardSkeleton } from '@/components/question-card';
 import { ScoreCard } from '@/components/score-card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 type QuizProps = {
@@ -21,15 +21,20 @@ export function Quiz({ questions: initialQuestions, onRestartQuiz }: QuizProps) 
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const [shuffled, setShuffled] = useState(false);
 
   useEffect(() => {
     // Shuffle questions on component mount on the client-side to avoid hydration mismatch
-    const shuffledQuestions = [...initialQuestions].sort(() => Math.random() - 0.5);
-    setQuestions(shuffledQuestions);
-  }, [initialQuestions]);
+    // and only if they haven't been shuffled yet.
+    if (!shuffled) {
+      const shuffledQuestions = [...initialQuestions].sort(() => Math.random() - 0.5);
+      setQuestions(shuffledQuestions);
+      setShuffled(true);
+    }
+  }, [initialQuestions, shuffled]);
 
   const currentQuestion = useMemo(() => questions[currentQuestionIndex], [questions, currentQuestionIndex]);
-  const progressValue = useMemo(() => questions.length > 0 ? ((currentQuestionIndex) / questions.length) * 100 : 0, [currentQuestionIndex, questions.length]);
+  const progressValue = useMemo(() => questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0, [currentQuestionIndex, questions.length]);
 
 
   const handleSelectAnswer = (answer: string) => {
@@ -93,12 +98,12 @@ export function Quiz({ questions: initialQuestions, onRestartQuiz }: QuizProps) 
             <Progress value={progressValue} className="h-2" />
         </div>
         <Button variant="ghost" size="icon" className="ml-4" onClick={onRestartQuiz}>
-            <RotateCcw className="h-4 w-4" />
-            <span className="sr-only">Start New Quiz</span>
+            <ArrowLeft className="h-4 w-4" />
+            <span className="sr-only">Back to Quiz Setup</span>
         </Button>
       </div>
       <QuestionCard
-        key={currentQuestionIndex}
+        key={currentQuestion.id}
         question={currentQuestion}
         selectedAnswer={selectedAnswer}
         onSelectAnswer={handleSelectAnswer}
