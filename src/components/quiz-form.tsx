@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -15,8 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Upload, Save, Trash2, Rocket } from "lucide-react";
-import { Quiz } from "./quiz";
-import type { Question } from "@/lib/quiz-data";
 import {
   Dialog,
   DialogContent,
@@ -36,13 +34,18 @@ type UserQuestion = {
 
 type SavedQuiz = {
   name: string;
-  quizId?: string;
+  quizId: string;
   json: string;
+};
+
+type StoredQuizRecord = Omit<SavedQuiz, "quizId"> & { quizId?: string };
+type QuizSessionPayload = {
+  json: string;
+  name: string;
 };
 
 export function QuizForm() {
   const [jsonInput, setJsonInput] = useState("");
-  const [questions, setQuestions] = useState<Question[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [savedQuizzes, setSavedQuizzes] = useState<SavedQuiz[]>([]);
@@ -50,12 +53,28 @@ export function QuizForm() {
   const [quizName, setQuizName] = useState("");
   const [isAddQuizDialogOpen, setIsAddQuizDialogOpen] = useState(false);
   const [hasLoadedSavedQuizzes, setHasLoadedSavedQuizzes] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     try {
       const storedQuizzes = localStorage.getItem("savedQuizzes");
       if (storedQuizzes) {
-        setSavedQuizzes(JSON.parse(storedQuizzes));
+        const parsed: StoredQuizRecord[] = JSON.parse(storedQuizzes);
+        let needsPersist = false;
+        const hydrated: SavedQuiz[] = parsed.map((quiz) => {
+          if (quiz.quizId) {
+            return quiz as SavedQuiz;
+          }
+          needsPersist = true;
+          return {
+            ...quiz,
+            quizId: crypto.randomUUID(),
+          } as SavedQuiz;
+        });
+        if (needsPersist) {
+          localStorage.setItem("savedQuizzes", JSON.stringify(hydrated));
+        }
+        setSavedQuizzes(hydrated);
       }
     } catch (e) {
       console.error("Failed to load quizzes from localStorage", e);
@@ -106,26 +125,42 @@ export function QuizForm() {
     }
   };
 
-  const parseAndStartQuiz = (jsonString: string) => {
-    if (!validateJson(jsonString)) {
-      setQuestions(null);
-      return;
+  const persistQuizPayload = (quizId: string, payload: QuizSessionPayload) => {
+    try {
+      sessionStorage.setItem(`quiz-${quizId}`, JSON.stringify(payload));
+    } catch (storageError) {
+      console.warn("Failed to persist quiz payload", storageError);
     }
-    const data: UserQuestion[] = JSON.parse(jsonString);
-    const formattedQuestions = data.map((q, index) => ({
-      id: index + 1,
-      question: q.question,
-      options: q.option,
-      correctAnswer: q.answer,
-      explanation: q.explanation,
-    }));
+  };
 
-    setQuestions(formattedQuestions);
-    setError(null);
+  const navigateToQuiz = (quizId: string, json: string, name: string) => {
+    persistQuizPayload(quizId, { json, name });
+    setIsAddQuizDialogOpen(false);
+    router.push(`/${quizId}`);
+  };
+
+  const deriveQuizName = (jsonString: string) => {
+    try {
+      const data: UserQuestion[] = JSON.parse(jsonString);
+      const firstQuestion = data?.[0]?.question?.trim();
+      if (firstQuestion) {
+        return firstQuestion.length > 60
+          ? `${firstQuestion.slice(0, 57)}...`
+          : firstQuestion;
+      }
+    } catch (err) {
+      console.warn("Failed to derive quiz name", err);
+    }
+    return "Custom Quiz";
   };
 
   const handleStartQuiz = () => {
-    parseAndStartQuiz(jsonInput);
+    if (!validateJson(jsonInput)) {
+      return;
+    }
+    const runtimeQuizId = crypto.randomUUID();
+    const derivedName = deriveQuizName(jsonInput);
+    navigateToQuiz(runtimeQuizId, jsonInput, derivedName);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,21 +170,15 @@ export function QuizForm() {
       reader.onload = (e) => {
         const text = e.target?.result as string;
         setJsonInput(text);
-        if (validateJson(text)) {
-          parseAndStartQuiz(text);
-        }
+        validateJson(text);
       };
       reader.readAsText(file);
+      event.target.value = "";
     }
   };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
-  };
-
-  const handleRestart = () => {
-    setQuestions(null);
-    // Keep jsonInput and error for user to see
   };
 
   const handleOpenSaveDialog = () => {
@@ -178,24 +207,20 @@ export function QuizForm() {
   const loadQuiz = (json: string) => {
     setJsonInput(json);
     setError(null);
+    setIsAddQuizDialogOpen(true);
   };
 
-  const startSavedQuiz = (json: string) => {
-    loadQuiz(json);
-    parseAndStartQuiz(json);
+  const startSavedQuiz = (quiz: SavedQuiz) => {
+    navigateToQuiz(quiz.quizId, quiz.json, quiz.name);
   };
 
-  const deleteQuiz = (quizNameToDelete: string) => {
+  const deleteQuiz = (quizIdToDelete: string) => {
     const updatedQuizzes = savedQuizzes.filter(
-      (q) => q.name !== quizNameToDelete
+      (q) => q.quizId !== quizIdToDelete
     );
     setSavedQuizzes(updatedQuizzes);
     localStorage.setItem("savedQuizzes", JSON.stringify(updatedQuizzes));
   };
-
-  if (questions) {
-    return <Quiz questions={questions} onRestartQuiz={handleRestart} />;
-  }
 
   return (
     <>
@@ -218,9 +243,9 @@ export function QuizForm() {
             </div>
           ) : (
             <ul className="space-y-3">
-              {savedQuizzes.map((quiz, index) => (
+              {savedQuizzes.map((quiz) => (
                 <li
-                  key={index}
+                  key={quiz.quizId}
                   className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                 >
                   <span className="font-medium flex-1 mb-2 sm:mb-0">
@@ -234,13 +259,13 @@ export function QuizForm() {
                     >
                       Load
                     </Button>
-                    <Button size="sm" onClick={() => startSavedQuiz(quiz.json)}>
+                    <Button size="sm" onClick={() => startSavedQuiz(quiz)}>
                       Start
                     </Button>
                     <Button
                       variant="destructive"
                       size="icon"
-                      onClick={() => deleteQuiz(quiz.name)}
+                      onClick={() => deleteQuiz(quiz.quizId)}
                     >
                       <Trash2 className="h-4 w-4" />
                       <span className="sr-only">Delete {quiz.name}</span>
@@ -296,6 +321,13 @@ export function QuizForm() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json"
+              className="hidden"
+              onChange={handleFileChange}
+            />
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="json-input">Quiz JSON Data</Label>
