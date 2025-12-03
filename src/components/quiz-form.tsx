@@ -292,7 +292,21 @@ export function QuizForm() {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="json-input">Quiz JSON Data</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="json-input">Quiz JSON Data</Label>
+                {jsonInput && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setJsonInput("");
+                      setError(null);
+                    }}
+                  >
+                    Clear Text
+                  </Button>
+                )}
+              </div>
               <Textarea
                 id="json-input"
                 value={jsonInput}
