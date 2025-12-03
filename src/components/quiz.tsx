@@ -45,9 +45,10 @@ export function Quiz({
   const progressValue = useMemo(
     () =>
       questions.length > 0
-        ? (currentQuestionIndex / questions.length) * 100
+        ? ((currentQuestionIndex + (isAnswered ? 1 : 0)) / questions.length) *
+          100
         : 0,
-    [currentQuestionIndex, questions.length]
+    [currentQuestionIndex, questions.length, isAnswered]
   );
 
   const handleSelectAnswer = (answer: string) => {
