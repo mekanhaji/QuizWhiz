@@ -36,6 +36,7 @@ type UserQuestion = {
 
 type SavedQuiz = {
   name: string;
+  quizId?: string;
   json: string;
 };
 
@@ -162,7 +163,11 @@ export function QuizForm() {
       alert("Please enter a name for the quiz.");
       return;
     }
-    const newQuiz: SavedQuiz = { name: quizName, json: jsonInput };
+    const newQuiz: SavedQuiz = {
+      name: quizName,
+      json: jsonInput,
+      quizId: crypto.randomUUID(),
+    };
     const updatedQuizzes = [...savedQuizzes, newQuiz];
     setSavedQuizzes(updatedQuizzes);
     localStorage.setItem("savedQuizzes", JSON.stringify(updatedQuizzes));
