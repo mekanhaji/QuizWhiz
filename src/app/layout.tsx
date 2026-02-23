@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { GlobalLogoutHeader } from "@/components/global-logout-header";
 
 export const metadata: Metadata = {
   title: "QuizWhiz",
@@ -45,6 +46,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
+        <GlobalLogoutHeader />
         {children}
         <Toaster />
       </body>
