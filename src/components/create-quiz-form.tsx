@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PromptSuggestionCard } from "@/components/prompt-suggestion-card";
 
 type UserQuestion = {
   question: string;
@@ -43,9 +44,11 @@ type DraftPayload = {
 };
 
 const PROMPT_SUGGESTIONS = [
-  "Create 5 beginner JavaScript multiple-choice questions with 4 options each and include a short explanation for each correct answer.",
-  "Create 10 world geography questions in JSON format where each question has exactly 4 options and one correct answer.",
-  "Create 8 data structures questions with practical examples. Keep explanations under 2 sentences for each question.",
+  `Create mcq question in JSON format. the json structure should be [{ question: string, option: string[], answer: string, explanation: string }]
+  Make sure to provide 4 options for each question and the answer should be one of the options.
+  here question field is the question statement, option is the array of options, answer is the correct answer and explanation is the detailed explanation of the answer.
+  Topics: 
+  `,
 ];
 
 export function CreateQuizForm() {
@@ -297,24 +300,7 @@ export function CreateQuizForm() {
         </CardContent>
       </Card>
 
-      <Card className="mt-4">
-        <CardHeader>
-          <CardTitle>Prompt Ideas</CardTitle>
-          <CardDescription>
-            Use these sample prompts with your AI assistant to generate quiz
-            JSON.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2 text-sm">
-            {PROMPT_SUGGESTIONS.map((prompt, index) => (
-              <li key={index} className="rounded-md border p-3">
-                {prompt}
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+      <PromptSuggestionCard prompts={PROMPT_SUGGESTIONS} />
 
       <Dialog open={isSaveModalOpen} onOpenChange={setIsSaveModalOpen}>
         <DialogContent>
