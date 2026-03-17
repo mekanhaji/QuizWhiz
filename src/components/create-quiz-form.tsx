@@ -43,14 +43,6 @@ type DraftPayload = {
   name?: string;
 };
 
-const PROMPT_SUGGESTIONS = [
-  `Create mcq question in JSON format. the json structure should be [{ question: string, option: string[], answer: string, explanation: string }]
-  Make sure to provide 4 options for each question and the answer should be one of the options.
-  here question field is the question statement, option is the array of options, answer is the correct answer and explanation is the detailed explanation of the answer.
-  Topics: 
-  `,
-];
-
 export function CreateQuizForm() {
   const [jsonInput, setJsonInput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -300,7 +292,7 @@ export function CreateQuizForm() {
         </CardContent>
       </Card>
 
-      <PromptSuggestionCard prompts={PROMPT_SUGGESTIONS} />
+      <PromptSuggestionCard />
 
       <Dialog open={isSaveModalOpen} onOpenChange={setIsSaveModalOpen}>
         <DialogContent>

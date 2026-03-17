@@ -9,6 +9,23 @@
 - Explanation Display: Display an explanation after answering to educate the user.
 - Quiz Navigation: Enable navigation to the next question; disable next button after answering until the next question is rendered.
 - Score Tracking: Show the total score and percentage at the end of the quiz.
+- Dynamic Prompt Builder: Provide configurable AI prompt parameters for MCQ JSON generation with runtime overrides.
+
+## Prompt Builder Requirements:
+
+- Prompt must support dynamic fields for:
+  - `numQuestions`
+  - `difficulty`
+  - `topics`
+- Prompt defaults must exist and be centrally managed.
+- Prompt should remain easy to extend with:
+  - `language`
+  - `includeExplanations`
+  - `randomizeOptions`
+  - `optionsPerQuestion`
+  - `willAttachNotes`
+- Prompt output must always instruct the model to produce:
+  - `[{ question: string, option: string[], answer: string, explanation: string }]`
 
 ## Style Guidelines:
 
