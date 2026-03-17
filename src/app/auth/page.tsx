@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { login, signup } from "./actions";
@@ -20,6 +20,24 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 type AuthMode = "login" | "signup";
 
 export default function AuthPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-background p-4">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-6 text-center text-sm text-muted-foreground">
+              Loading...
+            </CardContent>
+          </Card>
+        </main>
+      }
+    >
+      <AuthPageContent />
+    </Suspense>
+  );
+}
+
+function AuthPageContent() {
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode");
   const initialMode: AuthMode = modeParam === "signup" ? "signup" : "login";
