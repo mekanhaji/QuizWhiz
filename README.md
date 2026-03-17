@@ -1,5 +1,59 @@
-# Firebase Studio
+# QuizWhiz
 
-This is a NextJS starter in Firebase Studio.
+QuizWhiz is a Next.js quiz app where users can upload or paste question JSON,
+save quizzes locally, and run quiz sessions in the browser.
 
-To get started, take a look at src/app/page.tsx.
+## Dynamic MCQ Prompt System
+
+The app includes a configurable MCQ prompt builder for generating quiz JSON with
+an AI assistant.
+
+The required output structure remains:
+
+```ts
+[{ question: string, option: string[], answer: string, explanation: string }]
+```
+
+### Runtime Parameters
+
+Supported dynamic fields:
+
+- `numQuestions`
+- `difficulty` (`easy` / `medium` / `hard` or numeric scale)
+- `topics` (string list)
+- `language` (optional)
+- `includeExplanations` (optional)
+- `randomizeOptions` (optional)
+- `optionsPerQuestion` (optional)
+- `willAttachNotes` (optional)
+
+### Defaults and Overrides
+
+Defaults are defined in `src/lib/mcq-prompt.ts` via
+`DEFAULT_MCQ_PROMPT_CONFIG`. These defaults are used by the prompt UI and can
+be overridden:
+
+1. At runtime in the prompt configuration card.
+2. Programmatically by passing partial config to `buildMcqPrompt(...)`.
+3. Programmatically by passing `defaultConfig` to `PromptSuggestionCard`.
+
+Example:
+
+```ts
+import { buildMcqPrompt } from "@/lib/mcq-prompt";
+
+const prompt = buildMcqPrompt({
+  numQuestions: 15,
+  difficulty: "hard",
+  topics: ["JavaScript", "TypeScript", "Node.js"],
+  language: "English",
+  includeExplanations: true,
+});
+```
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
