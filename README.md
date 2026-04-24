@@ -1,60 +1,28 @@
-# QuizWhiz
-<img width="1900" height="1120" alt="QuizWhiz" src="https://github.com/user-attachments/assets/f2c88e5d-2db1-40e1-9b80-35d0509fdcae" />
+<p align="center">
+<img width="1774" height="887" alt="QuizWhiz banner" src="https://github.com/user-attachments/assets/bf2eb68d-03e2-4047-91f2-e1ebfbe66e07" />
+</p>
 
-QuizWhiz is a Next.js quiz app where users can upload or paste question JSON,
-save quizzes locally, and run quiz sessions in the browser.
+<h1 align="center">QuizWhiz</h1>
 
-## Dynamic MCQ Prompt System
+<p align="center">
+  A lightweight, offline-first quiz app built with Next.js.
+</p>
 
-The app includes a configurable MCQ prompt builder for generating quiz JSON with
-an AI assistant.
+---
 
-The required output structure remains:
+## ✨ Features
 
-```ts
-[{ question: string, option: string[], answer: string, explanation: string }]
-```
+- 📥 Import questions via JSON (paste or upload)
+- 💾 Save quizzes locally in your browser
+- ▶️ Run quiz sessions instantly
+- 📊 Score tracking and feedback
+- ⚡ No backend required — works fully client-side
 
-### Runtime Parameters
+---
 
-Supported dynamic fields:
+## 🛠 Built With
+- Next.js
+- React
+- TypeScript (if you're using it)
+- Tailwind CSS (assuming you are, because everyone is)
 
-- `numQuestions`
-- `difficulty` (`easy` / `medium` / `hard` or numeric scale)
-- `topics` (string list)
-- `language` (optional)
-- `includeExplanations` (optional)
-- `randomizeOptions` (optional)
-- `optionsPerQuestion` (optional)
-- `willAttachNotes` (optional)
-
-### Defaults and Overrides
-
-Defaults are defined in `src/lib/mcq-prompt.ts` via
-`DEFAULT_MCQ_PROMPT_CONFIG`. These defaults are used by the prompt UI and can
-be overridden:
-
-1. At runtime in the prompt configuration card.
-2. Programmatically by passing partial config to `buildMcqPrompt(...)`.
-3. Programmatically by passing `defaultConfig` to `PromptSuggestionCard`.
-
-Example:
-
-```ts
-import { buildMcqPrompt } from "@/lib/mcq-prompt";
-
-const prompt = buildMcqPrompt({
-  numQuestions: 15,
-  difficulty: "hard",
-  topics: ["JavaScript", "TypeScript", "Node.js"],
-  language: "English",
-  includeExplanations: true,
-});
-```
-
-## Local Development
-
-```bash
-npm install
-npm run dev
-```
