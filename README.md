@@ -1,4 +1,5 @@
 # QuizWhiz
+<img width="1900" height="1120" alt="QuizWhiz" src="https://github.com/user-attachments/assets/f2c88e5d-2db1-40e1-9b80-35d0509fdcae" />
 
 QuizWhiz is a Next.js quiz app where users can upload or paste question JSON,
 save quizzes locally, and run quiz sessions in the browser.
