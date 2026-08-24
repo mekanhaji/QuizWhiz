@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -11,53 +11,19 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-
-type SavedQuiz = {
-  name: string;
-  quizId: string;
-  json: string;
-};
-
-type StoredQuizRecord = Omit<SavedQuiz, "quizId"> & { quizId?: string };
+import { useQuizStore, type SavedQuiz } from "@/store/quiz-store";
 
 export function QuizForm() {
-  const [savedQuizzes, setSavedQuizzes] = useState<SavedQuiz[]>([]);
-  const [hasLoadedSavedQuizzes, setHasLoadedSavedQuizzes] = useState(false);
+  const savedQuizzes = useQuizStore((state) => state.savedQuizzes);
+  const hasHydrated = useQuizStore((state) => state.hasHydrated);
+  const deleteSavedQuiz = useQuizStore((state) => state.deleteSavedQuiz);
   const router = useRouter();
 
   useEffect(() => {
-    try {
-      const storedQuizzes = localStorage.getItem("savedQuizzes");
-      if (storedQuizzes) {
-        const parsed: StoredQuizRecord[] = JSON.parse(storedQuizzes);
-        let needsPersist = false;
-        const hydrated: SavedQuiz[] = parsed.map((quiz) => {
-          if (quiz.quizId) {
-            return quiz as SavedQuiz;
-          }
-          needsPersist = true;
-          return {
-            ...quiz,
-            quizId: crypto.randomUUID(),
-          } as SavedQuiz;
-        });
-        if (needsPersist) {
-          localStorage.setItem("savedQuizzes", JSON.stringify(hydrated));
-        }
-        setSavedQuizzes(hydrated);
-      }
-    } catch (e) {
-      console.error("Failed to load quizzes from localStorage", e);
-    } finally {
-      setHasLoadedSavedQuizzes(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (hasLoadedSavedQuizzes && savedQuizzes.length === 0) {
+    if (hasHydrated && savedQuizzes.length === 0) {
       router.replace("/create-new-quiz");
     }
-  }, [hasLoadedSavedQuizzes, savedQuizzes, router]);
+  }, [hasHydrated, savedQuizzes, router]);
 
   const startSavedQuiz = (quiz: SavedQuiz) => {
     try {
@@ -84,11 +50,7 @@ export function QuizForm() {
   };
 
   const deleteQuiz = (quizIdToDelete: string) => {
-    const updatedQuizzes = savedQuizzes.filter(
-      (q) => q.quizId !== quizIdToDelete,
-    );
-    setSavedQuizzes(updatedQuizzes);
-    localStorage.setItem("savedQuizzes", JSON.stringify(updatedQuizzes));
+    deleteSavedQuiz(quizIdToDelete);
   };
 
   return (

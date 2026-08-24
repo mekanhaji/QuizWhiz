@@ -8,12 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useQuizStore } from "@/store/quiz-store";
 
 type UserQuestion = {
   question: string;
   option: string[];
   answer: string;
   explanation: string;
+  bookmarks?: string[];
 };
 
 const parseQuizQuestions = (jsonString: string): Question[] => {
@@ -29,7 +31,7 @@ const parseQuizQuestions = (jsonString: string): Question[] => {
     }
     if (!q.answer || !q.explanation) {
       throw new Error(
-        `Question ${index + 1} is missing an answer or explanation.`
+        `Question ${index + 1} is missing an answer or explanation.`,
       );
     }
 
@@ -39,6 +41,7 @@ const parseQuizQuestions = (jsonString: string): Question[] => {
       options: q.option,
       correctAnswer: q.answer,
       explanation: q.explanation,
+      bookmarks: q.bookmarks || [],
     };
   });
 };
@@ -54,26 +57,24 @@ export default function QuizRunnerPage({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [quizTitle, setQuizTitle] = useState("QuizWhiz");
+  const hasHydrated = useQuizStore((state) => state.hasHydrated);
+  const findSavedQuizById = useQuizStore((state) => state.findSavedQuizById);
 
   useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
     const loadQuiz = () => {
       try {
         let quizJson: string | null = null;
         let payloadFromSession = false;
-        const storedQuizzes = localStorage.getItem("savedQuizzes");
+        const savedQuiz = findSavedQuizById(quizId);
 
-        if (storedQuizzes) {
-          const savedList: Array<{
-            quizId?: string;
-            json: string;
-            name?: string;
-          }> = JSON.parse(storedQuizzes);
-          const match = savedList.find((quiz) => quiz.quizId === quizId);
-          if (match?.json) {
-            quizJson = match.json;
-            if (match.name) {
-              setQuizTitle(match.name);
-            }
+        if (savedQuiz?.json) {
+          quizJson = savedQuiz.json;
+          if (savedQuiz.name) {
+            setQuizTitle(savedQuiz.name);
           }
         }
 
@@ -114,7 +115,7 @@ export default function QuizRunnerPage({
         }
       } catch (quizError: any) {
         setError(
-          quizError?.message ?? "Unable to load this quiz. Please try again."
+          quizError?.message ?? "Unable to load this quiz. Please try again.",
         );
       } finally {
         setIsLoading(false);
@@ -122,7 +123,7 @@ export default function QuizRunnerPage({
     };
 
     loadQuiz();
-  }, [quizId]);
+  }, [quizId, hasHydrated, findSavedQuizById]);
 
   const handleReturnHome = () => router.push("/");
 
