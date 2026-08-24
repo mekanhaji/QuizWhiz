@@ -24,18 +24,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PromptSuggestionCard } from "@/components/prompt-suggestion-card";
+import { useQuizStore } from "@/store/quiz-store";
 
 type UserQuestion = {
   question: string;
   option: string[];
   answer: string;
   explanation: string;
-};
-
-type SavedQuiz = {
-  name: string;
-  quizId: string;
-  json: string;
 };
 
 type DraftPayload = {
@@ -49,6 +44,8 @@ export function CreateQuizForm() {
   const [quizName, setQuizName] = useState("");
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const addSavedQuiz = useQuizStore((state) => state.addSavedQuiz);
+  const hasHydrated = useQuizStore((state) => state.hasHydrated);
   const router = useRouter();
 
   useEffect(() => {
@@ -150,19 +147,20 @@ export function CreateQuizForm() {
   };
 
   const handleSaveQuiz = () => {
+    if (!hasHydrated) {
+      setError(
+        "Saved quizzes are still loading. Please try again in a moment.",
+      );
+      return;
+    }
+
     const finalName = quizName.trim() || deriveQuizName(jsonInput);
 
     try {
-      const existing = localStorage.getItem("savedQuizzes");
-      const parsed: SavedQuiz[] = existing ? JSON.parse(existing) : [];
-      const newQuiz: SavedQuiz = {
+      addSavedQuiz({
         name: finalName,
         json: jsonInput,
-        quizId: crypto.randomUUID(),
-      };
-
-      const updatedQuizzes = [...parsed, newQuiz];
-      localStorage.setItem("savedQuizzes", JSON.stringify(updatedQuizzes));
+      });
       setQuizName(finalName);
       setIsSaveModalOpen(false);
       router.push("/");
@@ -266,7 +264,7 @@ export function CreateQuizForm() {
               variant="outline"
               className="w-full"
               onClick={handleOpenSaveDialog}
-              disabled={!jsonInput}
+              disabled={!jsonInput || !hasHydrated}
             >
               <Save className="mr-2 h-4 w-4" />
               Save Quiz
