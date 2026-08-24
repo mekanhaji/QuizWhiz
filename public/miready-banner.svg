@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1774 887" role="img" aria-labelledby="title description">
+  <title id="title">MIReady</title>
+  <desc id="description">A focused, friendly quiz workspace.</desc>
+  <rect width="1774" height="887" fill="#f4efe5"/>
+  <path d="M0 690c245-146 431-63 634-176 242-134 391-283 650-258 214 21 333 150 490 69v562H0z" fill="#d9e7df"/>
+  <path d="M0 763c267-98 408-38 623-127 232-96 397-226 621-171 216 53 310 139 530 61v361H0z" fill="#b6d3ca"/>
+  <rect x="157" y="142" width="210" height="210" rx="48" fill="#112b46"/>
+  <path d="M204 201h45l57 76 57-76h45v92h-45v-43l-57 71-57-71v43h-45z" fill="#f4c95d"/>
+  <circle cx="346" cy="189" r="17" fill="#e87561"/>
+  <text x="157" y="500" fill="#112b46" font-family="Georgia, serif" font-size="132" font-weight="700">MIReady</text>
+  <text x="166" y="570" fill="#35546b" font-family="Arial, sans-serif" font-size="30" letter-spacing="3">QUIZ WITH PURPOSE</text>
+</svg>

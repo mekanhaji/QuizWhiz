@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-export function GlobalLogoutHeader() {
+export function BrandHeader() {
   return (
     <header className="w-full bg-background">
       <main className="flex flex-col items-center justify-center bg-background">
@@ -11,7 +11,7 @@ export function GlobalLogoutHeader() {
             href="/"
             className="text-center text-2xl font-headline font-bold text-primary dark:text-primary-foreground"
           >
-            QuizWhiz
+            MIReady
           </Link>
         </div>
       </main>

@@ -27,7 +27,7 @@ export function ScoreCard({
   const percentage = Math.round((score / totalQuestions) * 100);
 
   const getFeedback = () => {
-    if (percentage === 100) return "Perfect Score! You're a true QuizWhiz!";
+    if (percentage === 100) return "Perfect Score! You're fully MIReady!";
     if (percentage >= 80) return "Great job! You really know your stuff.";
     if (percentage >= 60)
       return "Good effort! A little more practice and you'll be an expert.";

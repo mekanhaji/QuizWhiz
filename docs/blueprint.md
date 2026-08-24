@@ -1,4 +1,4 @@
-# **App Name**: QuizWhiz
+# **App Name**: MIReady
 
 ## Core Features:
 
