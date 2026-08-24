@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Quiz } from "@/components/quiz";
 import type { Question } from "@/lib/quiz-data";
 import { Button } from "@/components/ui/button";
@@ -46,17 +46,13 @@ const parseQuizQuestions = (jsonString: string): Question[] => {
   });
 };
 
-export default function QuizRunnerPage({
-  params,
-}: {
-  params: { quizId: string };
-}) {
+export default function QuizRunnerPage() {
   const router = useRouter();
-  const { quizId } = params;
+  const { quizId } = useParams<{ quizId: string }>();
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [quizTitle, setQuizTitle] = useState("QuizWhiz");
+  const [quizTitle, setQuizTitle] = useState("MIReady");
   const hasHydrated = useQuizStore((state) => state.hasHydrated);
   const findSavedQuizById = useQuizStore((state) => state.findSavedQuizById);
 

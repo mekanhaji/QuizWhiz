@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">MIReady</title>
+  <rect width="512" height="512" rx="112" fill="#112b46"/>
+  <path d="M115 157h62l79 104 79-104h62v198h-62V252l-79 99-79-99v103h-62z" fill="#f4c95d"/>
+  <circle cx="375" cy="145" r="28" fill="#e87561"/>
+</svg>

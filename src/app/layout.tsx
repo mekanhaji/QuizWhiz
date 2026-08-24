@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { GlobalLogoutHeader } from "@/components/global-logout-header";
+import { BrandHeader } from "@/components/brand-header";
 
 export const metadata: Metadata = {
-  title: "QuizWhiz",
+  title: "MIReady",
   description: "A fun and interactive quiz app.",
 };
 
@@ -16,23 +16,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon-16x16.png"
-        />
+        <link rel="apple-touch-icon" href="/miready-mark.svg" />
+        <link rel="icon" type="image/svg+xml" href="/miready-mark.svg" />
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -46,7 +31,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <GlobalLogoutHeader />
+        <BrandHeader />
         {children}
         <Toaster />
       </body>
