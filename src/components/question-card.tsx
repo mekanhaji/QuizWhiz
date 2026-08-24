@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle, XCircle } from "lucide-react";
+import { useMemo } from "react";
 
 type QuestionCardProps = {
   question: Question;
@@ -49,6 +50,10 @@ export function QuestionCard({
     return "border-border";
   };
 
+  const options = useMemo(() => {
+    return question.options.sort(() => Math.random() - 0.5);
+  }, [question.options]);
+
   const getIcon = (option: string) => {
     if (!isAnswered) return null;
 
@@ -77,13 +82,13 @@ export function QuestionCard({
           disabled={isAnswered}
           className="space-y-4"
         >
-          {question.options.map((option, index) => (
+          {options.map((option, index) => (
             <Label
               key={index}
               htmlFor={`option-${question.id}-${index}`}
               className={cn(
                 "flex items-center justify-between space-x-3 rounded-lg border p-4 transition-all cursor-pointer",
-                getOptionStyle(option)
+                getOptionStyle(option),
               )}
             >
               <div className="flex items-center gap-4">
