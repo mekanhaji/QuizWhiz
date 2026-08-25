@@ -287,11 +287,7 @@ export function CreateQuizForm() {
         </CardContent>
       </Card>
 
-      <Dialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <PromptSuggestionCard />
-        </DialogContent>
-      </Dialog>
+      <PromptSuggestionCard open={isPromptOpen} onOpenChange={setIsPromptOpen} />
 
       <Dialog open={isSaveModalOpen} onOpenChange={setIsSaveModalOpen}>
         <DialogContent>
