@@ -3,6 +3,7 @@
 import { PromptSuggestionCard } from "@/app/create-new-quiz/_components/prompt-suggestion-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { PasteButton } from "@/components/paste-button";
 import {
   Card,
   CardContent,
@@ -218,7 +219,7 @@ export function CreateQuizForm() {
           />
 
           <div className="space-y-2">
-            <Label htmlFor="quiz-name-input">Quiz Name (optional)</Label>
+            <Label htmlFor="quiz-name-input">Quiz Name</Label>
             <Input
               id="quiz-name-input"
               value={quizName}
@@ -228,21 +229,27 @@ export function CreateQuizForm() {
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-end justify-between mb-4">
               <Label htmlFor="json-input">Quiz JSON Data</Label>
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={!jsonInput}
-                onClick={() => {
-                  setJsonInput("");
-                  setError(null);
-                }}
-              >
-                Clear Text
-              </Button>
-              {/* {jsonInput && (
-              )} */}
+              <div className="flex items-center gap-2">
+                <PasteButton
+                  onPaste={(text) => {
+                    setJsonInput(text);
+                    setError(null);
+                  }}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={!jsonInput}
+                  onClick={() => {
+                    setJsonInput("");
+                    setError(null);
+                  }}
+                >
+                  Clear Text
+                </Button>
+              </div>
             </div>
             <Textarea
               id="json-input"
@@ -287,7 +294,10 @@ export function CreateQuizForm() {
         </CardContent>
       </Card>
 
-      <PromptSuggestionCard open={isPromptOpen} onOpenChange={setIsPromptOpen} />
+      <PromptSuggestionCard
+        open={isPromptOpen}
+        onOpenChange={setIsPromptOpen}
+      />
 
       <Dialog open={isSaveModalOpen} onOpenChange={setIsSaveModalOpen}>
         <DialogContent>

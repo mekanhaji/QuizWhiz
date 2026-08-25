@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { PasteButton } from "@/components/paste-button";
 import {
   Dialog,
   DialogContent,
@@ -118,7 +119,10 @@ export function PromptSuggestionCard({
         <div className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1 sm:col-span-2">
-              <Label htmlFor="prompt-topics">Topics</Label>
+              <div className="flex items-end justify-between mb-4 ">
+                <Label htmlFor="prompt-topics">Topics</Label>
+                <PasteButton onPaste={(text) => setTopicsInput(text)} />
+              </div>
               <Textarea
                 id="prompt-topics"
                 value={topicsInput}
