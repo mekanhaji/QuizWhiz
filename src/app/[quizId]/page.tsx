@@ -52,7 +52,7 @@ export default function QuizRunnerPage() {
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [quizTitle, setQuizTitle] = useState("MIReady");
+  const [quizTitle, setQuizTitle] = useState("M.I.Ready");
   const hasHydrated = useQuizStore((state) => state.hasHydrated);
   const findSavedQuizById = useQuizStore((state) => state.findSavedQuizById);
 

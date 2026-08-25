@@ -13,11 +13,14 @@ export function BrandHeader() {
           >
             <img
               src="/logo.svg"
-              alt="MIReady"
+              alt="M.I.Ready"
               className="h-4 object-contain sm:h-6"
             />
             <span className="font-headline text-2xl font-extrabold tracking-tight sm:text-3xl">
-              MIReady
+              <span className="text-accent bg-primary px-1 rounded-lg">
+                M.I.R
+              </span>
+              eady
             </span>
           </Link>
         </div>

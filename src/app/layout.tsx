@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { BrandHeader } from "@/components/brand-header";
 
 export const metadata: Metadata = {
-  title: "MIReady",
+  title: "M.I.Ready",
   description: "A fun and interactive quiz app.",
 };
 
