@@ -9,7 +9,6 @@ export type McqPromptConfig = {
   topics: string[];
   language: string;
   includeExplanations: boolean;
-  randomizeOptions: boolean;
   optionsPerQuestion: number;
   willAttachNotes: boolean;
 };
@@ -20,7 +19,6 @@ export const DEFAULT_MCQ_PROMPT_CONFIG: McqPromptConfig = {
   topics: ["general knowledge"],
   language: "English",
   includeExplanations: true,
-  randomizeOptions: true,
   optionsPerQuestion: 4,
   willAttachNotes: false,
 };
@@ -33,7 +31,6 @@ Parameters:
 - difficulty: {{{difficulty}}}
 - language: {{{language}}}
 - includeExplanations: {{{includeExplanations}}}
-- randomizeOptions: {{{randomizeOptions}}}
 - optionsPerQuestion: {{{optionsPerQuestion}}}
 - willAttachNotes: {{{willAttachNotes}}}
 
@@ -51,7 +48,6 @@ export const MCQ_PROMPT_PARAMETER_HELP = [
   "topics: Comma-separated list of domains to cover.",
   "language: Output language for questions, answers, and explanations.",
   "includeExplanations: Whether each question includes an explanation.",
-  "randomizeOptions: Whether options should appear in shuffled order.",
   "optionsPerQuestion: Number of answer choices for each question.",
   "willAttachNotes: Whether the user will attach notes the model must refer to.",
 ];
@@ -105,8 +101,6 @@ export function buildMcqPrompt(config: Partial<McqPromptConfig> = {}): string {
       "{{{includeExplanations}}}",
       String(normalized.includeExplanations),
     )
-    .replace("{{{randomizeOptions}}}", String(normalized.randomizeOptions))
-    .replace("{{{optionsPerQuestion}}}", String(normalized.optionsPerQuestion))
     .replace("{{{optionsPerQuestion}}}", String(normalized.optionsPerQuestion))
     .replace("{{{willAttachNotes}}}", String(normalized.willAttachNotes))
     .replace("{{{notesRule}}}", notesRule)

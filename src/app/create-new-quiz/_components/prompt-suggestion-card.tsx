@@ -1,7 +1,5 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,12 +10,24 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import {
   buildMcqPrompt,
   type McqPromptConfig,
   normalizeMcqPromptConfig,
 } from "@/lib/mcq-prompt";
+import { cn } from "@/lib/utils";
+import { Check, ChevronDown, ChevronUp, Copy } from "lucide-react";
+import { useMemo, useState } from "react";
 
 type PromptSuggestionCardProps = {
   open: boolean;
@@ -36,6 +46,7 @@ export function PromptSuggestionCard({
   );
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [isPromptExpanded, setIsPromptExpanded] = useState(false);
   const [numQuestions, setNumQuestions] = useState(mergedDefaults.numQuestions);
   const [difficulty, setDifficulty] = useState(
     String(mergedDefaults.difficulty),
@@ -46,9 +57,6 @@ export function PromptSuggestionCard({
   const [language, setLanguage] = useState(mergedDefaults.language);
   const [includeExplanations, setIncludeExplanations] = useState(
     mergedDefaults.includeExplanations,
-  );
-  const [randomizeOptions, setRandomizeOptions] = useState(
-    mergedDefaults.randomizeOptions,
   );
   const [optionsPerQuestion, setOptionsPerQuestion] = useState(
     mergedDefaults.optionsPerQuestion,
@@ -69,7 +77,6 @@ export function PromptSuggestionCard({
       topics: parsedTopics,
       language,
       includeExplanations,
-      randomizeOptions,
       optionsPerQuestion,
       willAttachNotes,
     });
@@ -79,7 +86,6 @@ export function PromptSuggestionCard({
     language,
     numQuestions,
     optionsPerQuestion,
-    randomizeOptions,
     topicsInput,
     willAttachNotes,
   ]);
@@ -111,10 +117,19 @@ export function PromptSuggestionCard({
         </DialogHeader>
         <div className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1 sm:col-span-2">
+              <Label htmlFor="prompt-topics">Topics</Label>
+              <Textarea
+                id="prompt-topics"
+                value={topicsInput}
+                onChange={(event) => setTopicsInput(event.target.value)}
+                placeholder="JavaScript closures, async/await"
+                rows={2}
+              />
+            </div>
+
             <div className="space-y-1">
-              <Label htmlFor="prompt-num-questions">
-                Number of Questions
-              </Label>
+              <Label htmlFor="prompt-num-questions">Number of Questions</Label>
               <Input
                 id="prompt-num-questions"
                 type="number"
@@ -130,22 +145,16 @@ export function PromptSuggestionCard({
 
             <div className="space-y-1">
               <Label htmlFor="prompt-difficulty">Difficulty</Label>
-              <Input
-                id="prompt-difficulty"
-                value={difficulty}
-                onChange={(event) => setDifficulty(event.target.value)}
-                placeholder="easy | medium | hard | 1-5"
-              />
-            </div>
-
-            <div className="space-y-1 sm:col-span-2">
-              <Label htmlFor="prompt-topics">Topics (comma-separated)</Label>
-              <Input
-                id="prompt-topics"
-                value={topicsInput}
-                onChange={(event) => setTopicsInput(event.target.value)}
-                placeholder="JavaScript closures, async/await"
-              />
+              <Select value={difficulty} onValueChange={setDifficulty}>
+                <SelectTrigger id="prompt-difficulty">
+                  <SelectValue placeholder="Select difficulty" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="easy">Easy</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="hard">Hard</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-1">
@@ -159,9 +168,7 @@ export function PromptSuggestionCard({
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="prompt-options-count">
-                Options per Question
-              </Label>
+              <Label htmlFor="prompt-options-count">Options per Question</Label>
               <Input
                 id="prompt-options-count"
                 type="number"
@@ -188,18 +195,7 @@ export function PromptSuggestionCard({
               />
             </div>
 
-            <div className="flex items-center justify-between rounded-md border p-3 sm:col-span-2">
-              <Label htmlFor="prompt-randomize-options">
-                Randomize Options
-              </Label>
-              <Switch
-                id="prompt-randomize-options"
-                checked={randomizeOptions}
-                onCheckedChange={setRandomizeOptions}
-              />
-            </div>
-
-            <div className="flex items-center justify-between rounded-md border p-3 sm:col-span-2">
+            <div className="flex items-center justify-between rounded-md border p-3">
               <Label htmlFor="prompt-will-attach-notes">
                 I will attach notes
               </Label>
@@ -232,15 +228,33 @@ export function PromptSuggestionCard({
                 )}
               </Button>
             </div>
-            <pre className="whitespace-pre-wrap text-sm font-sans">
-              {generatedPrompt}
-            </pre>
+            <div className="relative">
+              <pre
+                className={cn(
+                  "whitespace-pre-wrap text-sm font-sans pb-6 pr-8",
+                  !isPromptExpanded && "line-clamp-3",
+                )}
+              >
+                {generatedPrompt}
+              </pre>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute bottom-0 right-0 h-7 w-7"
+                onClick={() => setIsPromptExpanded((prev) => !prev)}
+              >
+                {isPromptExpanded ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+                <span className="sr-only">
+                  {isPromptExpanded ? "Collapse prompt" : "Expand prompt"}
+                </span>
+              </Button>
+            </div>
           </div>
-
-          <p className="text-xs text-muted-foreground">
-            Defaults are loaded from shared config and can be overridden in
-            this UI or by passing a new default config object.
-          </p>
         </div>
       </DialogContent>
     </Dialog>
