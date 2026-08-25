@@ -16,8 +16,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="apple-touch-icon" href="/miready-mark.svg" />
-        <link rel="icon" type="image/svg+xml" href="/miready-mark.svg" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+        <link rel="icon" type="image/svg+xml" href="/logo.svg" />
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

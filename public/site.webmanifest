@@ -3,17 +3,17 @@
   "short_name": "MIReady",
   "icons": [
     {
-      "src": "/miready-mark.svg",
+      "src": "/logo.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
     },
     {
-      "src": "/miready-mark.svg",
+      "src": "/logo.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ],
-  "theme_color": "#4051b5",
-  "background_color": "#e6e9f9",
+  "theme_color": "#2CA14C",
+  "background_color": "#FBF3DE",
   "display": "standalone"
 }

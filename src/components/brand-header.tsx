@@ -9,9 +9,15 @@ export function BrandHeader() {
         <div className="mx-auto flex w-full max-w-7xl items-center justify-center p-4">
           <Link
             href="/"
-            className="text-center text-2xl font-headline font-bold text-primary dark:text-primary-foreground"
+            className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            MIReady
+            <img
+              src="/logo.svg"
+              alt="MIReady"
+              width={64}
+              height={43}
+              className="h-auto w-16"
+            />
           </Link>
         </div>
       </main>
