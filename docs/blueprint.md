@@ -1,4 +1,4 @@
-# **App Name**: MIReady
+# **App Name**: M.I.Ready
 
 ## Core Features:
 

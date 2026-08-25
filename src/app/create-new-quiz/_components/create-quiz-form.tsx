@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, Rocket, Save, Upload } from "lucide-react";
+import { PromptSuggestionCard } from "@/app/create-new-quiz/_components/prompt-suggestion-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { PasteButton } from "@/components/paste-button";
 import {
   Card,
   CardContent,
@@ -23,8 +22,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { PromptSuggestionCard } from "@/components/prompt-suggestion-card";
 import { useQuizStore } from "@/store/quiz-store";
+import { AlertCircle, Rocket, Save, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 type UserQuestion = {
   question: string;
@@ -43,6 +44,7 @@ export function CreateQuizForm() {
   const [error, setError] = useState<string | null>(null);
   const [quizName, setQuizName] = useState("");
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addSavedQuiz = useQuizStore((state) => state.addSavedQuiz);
   const hasHydrated = useQuizStore((state) => state.hasHydrated);
@@ -189,20 +191,15 @@ export function CreateQuizForm() {
   return (
     <>
       <Card className="mt-6">
-        <CardHeader className="space-y-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-fit"
-            onClick={() => router.push("/")}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Saved Quizzes
-          </Button>
-          <CardTitle>Create Your Quiz</CardTitle>
-          <CardDescription>
-            Paste your quiz JSON, upload a JSON file, save the quiz, then start.
-          </CardDescription>
+        <CardHeader className="space-y-2 flex flex-row justify-between">
+          <div>
+            <CardTitle>Create Your Quiz</CardTitle>
+            <CardDescription>
+              Paste your quiz JSON, upload a JSON file, save the quiz, then
+              start.
+            </CardDescription>
+          </div>
+          <Button onClick={() => setIsPromptOpen(true)}>Prompt For AI</Button>
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
@@ -222,7 +219,7 @@ export function CreateQuizForm() {
           />
 
           <div className="space-y-2">
-            <Label htmlFor="quiz-name-input">Quiz Name (optional)</Label>
+            <Label htmlFor="quiz-name-input">Quiz Name</Label>
             <Input
               id="quiz-name-input"
               value={quizName}
@@ -232,12 +229,19 @@ export function CreateQuizForm() {
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
+            <div className="flex items-end justify-between mb-4">
               <Label htmlFor="json-input">Quiz JSON Data</Label>
-              {jsonInput && (
+              <div className="flex items-center gap-2">
+                <PasteButton
+                  onPaste={(text) => {
+                    setJsonInput(text);
+                    setError(null);
+                  }}
+                />
                 <Button
                   variant="ghost"
                   size="sm"
+                  disabled={!jsonInput}
                   onClick={() => {
                     setJsonInput("");
                     setError(null);
@@ -245,7 +249,7 @@ export function CreateQuizForm() {
                 >
                   Clear Text
                 </Button>
-              )}
+              </div>
             </div>
             <Textarea
               id="json-input"
@@ -290,7 +294,10 @@ export function CreateQuizForm() {
         </CardContent>
       </Card>
 
-      <PromptSuggestionCard />
+      <PromptSuggestionCard
+        open={isPromptOpen}
+        onOpenChange={setIsPromptOpen}
+      />
 
       <Dialog open={isSaveModalOpen} onOpenChange={setIsSaveModalOpen}>
         <DialogContent>

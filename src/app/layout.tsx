@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+// @ts-expect-error Next.js handles global CSS side-effect imports at build time.
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { BrandHeader } from "@/components/brand-header";
 
 export const metadata: Metadata = {
-  title: "MIReady",
+  title: "M.I.Ready",
   description: "A fun and interactive quiz app.",
 };
 

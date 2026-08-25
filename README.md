@@ -1,8 +1,8 @@
 <p align="center">
-<img width="1774" height="887" alt="MIReady banner" src="public/miready-banner.svg" />
+<img width="1774" height="887" alt="M.I.Ready banner" src="public/miready-banner.svg" />
 </p>
 
-<h1 align="center">MIReady</h1>
+<h1 align="center">M.I.Ready</h1>
 
 <p align="center">
   A lightweight, offline-first quiz app built with Next.js.
