@@ -1,50 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Quiz } from "@/components/quiz";
+import { Quiz } from "@/app/[quizId]/_components/quiz";
 import type { Question } from "@/lib/quiz-data";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { parseQuizQuestions } from "@/lib/quiz-data";
 import { useQuizStore } from "@/store/quiz-store";
-
-type UserQuestion = {
-  question: string;
-  option: string[];
-  answer: string;
-  explanation: string;
-  bookmarks?: string[];
-};
-
-const parseQuizQuestions = (jsonString: string): Question[] => {
-  const data: UserQuestion[] = JSON.parse(jsonString);
-
-  if (!Array.isArray(data) || data.length === 0) {
-    throw new Error("Quiz data is empty or malformed.");
-  }
-
-  return data.map((q, index) => {
-    if (!q.question || !Array.isArray(q.option) || !q.option.length) {
-      throw new Error(`Question ${index + 1} is missing text or options.`);
-    }
-    if (!q.answer || !q.explanation) {
-      throw new Error(
-        `Question ${index + 1} is missing an answer or explanation.`,
-      );
-    }
-
-    return {
-      id: index + 1,
-      question: q.question,
-      options: q.option,
-      correctAnswer: q.answer,
-      explanation: q.explanation,
-      bookmarks: q.bookmarks || [],
-    };
-  });
-};
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { LoadingQuizCard } from "./_components/loading-quiz-card";
+import { QuizUnavailableCard } from "./_components/quiz-unavailable-card";
 
 export default function QuizRunnerPage() {
   const router = useRouter();
@@ -57,15 +20,11 @@ export default function QuizRunnerPage() {
   const findSavedQuizById = useQuizStore((state) => state.findSavedQuizById);
 
   useEffect(() => {
-    if (!hasHydrated) {
-      return;
-    }
-
     const loadQuiz = () => {
       try {
         let quizJson: string | null = null;
         let payloadFromSession = false;
-        const savedQuiz = findSavedQuizById(quizId);
+        const savedQuiz = hasHydrated ? findSavedQuizById(quizId) : undefined;
 
         if (savedQuiz?.json) {
           quizJson = savedQuiz.json;
@@ -124,52 +83,21 @@ export default function QuizRunnerPage() {
   const handleReturnHome = () => router.push("/");
 
   if (isLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Loading Quiz</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Preparing your questions. This will only take a moment.
-            </p>
-          </CardContent>
-        </Card>
-      </main>
-    );
+    return <LoadingQuizCard />;
   }
 
   if (error || !questions) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Quiz Unavailable</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Something went wrong</AlertTitle>
-              <AlertDescription>
-                {error ?? "We couldn't load this quiz. Please try again."}
-              </AlertDescription>
-            </Alert>
-            <Button onClick={handleReturnHome}>Back to Saved Quizzes</Button>
-          </CardContent>
-        </Card>
-      </main>
+      <QuizUnavailableCard error={error} handleReturnHome={handleReturnHome} />
     );
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 sm:p-8 md:p-12 lg:p-24">
-      <div className="w-full max-w-2xl">
-        <h1 className="text-4xl font-headline font-bold text-center mb-8 text-primary dark:text-primary-foreground">
-          {quizTitle}
-        </h1>
-        <Quiz questions={questions} onRestartQuiz={handleReturnHome} />
-      </div>
-    </main>
+    <div className="w-full max-w-2xl">
+      <h1 className="text-4xl font-headline font-bold text-center py-4 text-primary dark:text-primary-foreground">
+        {quizTitle}
+      </h1>
+      <Quiz questions={questions} onRestartQuiz={handleReturnHome} />
+    </div>
   );
 }

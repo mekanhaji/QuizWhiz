@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuizStore } from "@/store/quiz-store";
-import { AlertCircle, Rocket, Save, Upload } from "lucide-react";
+import { AlertCircle, Save, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -122,26 +122,6 @@ export function CreateQuizForm() {
     return "Custom Quiz";
   };
 
-  const handleStartQuiz = () => {
-    if (!validateJson(jsonInput)) {
-      return;
-    }
-
-    const runtimeQuizId = crypto.randomUUID();
-    const runtimeQuizName = quizName.trim() || deriveQuizName(jsonInput);
-
-    try {
-      sessionStorage.setItem(
-        `quiz-${runtimeQuizId}`,
-        JSON.stringify({ json: jsonInput, name: runtimeQuizName }),
-      );
-    } catch (storageError) {
-      console.warn("Failed to persist quiz payload", storageError);
-    }
-
-    router.push(`/${runtimeQuizId}`);
-  };
-
   const handleOpenSaveDialog = () => {
     if (validateJson(jsonInput)) {
       setIsSaveModalOpen(true);
@@ -195,8 +175,7 @@ export function CreateQuizForm() {
           <div>
             <CardTitle>Create Your Quiz</CardTitle>
             <CardDescription>
-              Paste your quiz JSON, upload a JSON file, save the quiz, then
-              start.
+              Paste your quiz JSON, upload a JSON file, and save it.
             </CardDescription>
           </div>
           <Button onClick={() => setIsPromptOpen(true)}>Prompt For AI</Button>
@@ -282,15 +261,6 @@ export function CreateQuizForm() {
               Upload JSON
             </Button>
           </div>
-
-          <Button
-            className="w-full"
-            onClick={handleStartQuiz}
-            disabled={!jsonInput}
-          >
-            <Rocket className="mr-2 h-4 w-4" />
-            Start Quiz
-          </Button>
         </CardContent>
       </Card>
 

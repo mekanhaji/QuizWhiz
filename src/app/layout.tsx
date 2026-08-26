@@ -33,7 +33,9 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <BrandHeader />
-        {children}
+        <main className="flex flex-col items-center justify-center bg-background px-4 sm:px-8 mt-2">
+          {children}
+        </main>
         <Toaster />
       </body>
     </html>
