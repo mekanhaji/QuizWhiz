@@ -20,15 +20,11 @@ export default function QuizRunnerPage() {
   const findSavedQuizById = useQuizStore((state) => state.findSavedQuizById);
 
   useEffect(() => {
-    if (!hasHydrated) {
-      return;
-    }
-
     const loadQuiz = () => {
       try {
         let quizJson: string | null = null;
         let payloadFromSession = false;
-        const savedQuiz = findSavedQuizById(quizId);
+        const savedQuiz = hasHydrated ? findSavedQuizById(quizId) : undefined;
 
         if (savedQuiz?.json) {
           quizJson = savedQuiz.json;
