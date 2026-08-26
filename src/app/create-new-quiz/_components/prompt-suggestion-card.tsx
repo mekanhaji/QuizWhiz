@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { PasteButton } from "@/components/paste-button";
+import { AiAssistantLinks } from "./ai-assistant-links";
 import {
   Dialog,
   DialogContent,
@@ -210,7 +211,7 @@ export function PromptSuggestionCard({
               />
             </div>
           </div>
-
+          <AiAssistantLinks prompt={generatedPrompt} onCopy={handleCopy} />
           <div className="space-y-2 rounded-md border p-3">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">Generated Prompt</p>
