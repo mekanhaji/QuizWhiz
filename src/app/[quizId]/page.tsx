@@ -163,13 +163,11 @@ export default function QuizRunnerPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 sm:p-8 md:p-12 lg:p-24">
-      <div className="w-full max-w-2xl">
-        <h1 className="text-4xl font-headline font-bold text-center mb-8 text-primary dark:text-primary-foreground">
-          {quizTitle}
-        </h1>
-        <Quiz questions={questions} onRestartQuiz={handleReturnHome} />
-      </div>
-    </main>
+    <div className="w-full max-w-2xl">
+      <h1 className="text-4xl font-headline font-bold text-center py-4 text-primary dark:text-primary-foreground">
+        {quizTitle}
+      </h1>
+      <Quiz questions={questions} onRestartQuiz={handleReturnHome} />
+    </div>
   );
 }
