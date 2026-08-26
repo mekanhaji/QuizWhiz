@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useMemo } from "react";
 import type { Question } from "@/lib/quiz-data";
-import { QuestionCard, QuestionCardSkeleton } from "@/components/question-card";
-import { ScoreCard } from "@/components/score-card";
+import {
+  QuestionCard,
+  QuestionCardSkeleton,
+} from "@/app/[quizId]/_components/question-card";
+import { ScoreCard } from "@/app/[quizId]/_components/score-card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
@@ -31,7 +34,7 @@ export function Quiz({
     // and only if they haven't been shuffled yet.
     if (!shuffled) {
       const shuffledQuestions = [...initialQuestions].sort(
-        () => Math.random() - 0.5
+        () => Math.random() - 0.5,
       );
       setQuestions(shuffledQuestions);
       setShuffled(true);
@@ -40,7 +43,7 @@ export function Quiz({
 
   const currentQuestion = useMemo(
     () => questions[currentQuestionIndex],
-    [questions, currentQuestionIndex]
+    [questions, currentQuestionIndex],
   );
   const progressValue = useMemo(
     () =>
@@ -48,7 +51,7 @@ export function Quiz({
         ? ((currentQuestionIndex + (isAnswered ? 1 : 0)) / questions.length) *
           100
         : 0,
-    [currentQuestionIndex, questions.length, isAnswered]
+    [currentQuestionIndex, questions.length, isAnswered],
   );
 
   const handleSelectAnswer = (answer: string) => {
@@ -79,7 +82,7 @@ export function Quiz({
 
   const handleRestart = () => {
     const shuffledQuestions = [...initialQuestions].sort(
-      () => Math.random() - 0.5
+      () => Math.random() - 0.5,
     );
     setQuestions(shuffledQuestions);
     setCurrentQuestionIndex(0);
