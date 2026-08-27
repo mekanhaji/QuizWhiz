@@ -5,8 +5,20 @@ import { Toaster } from "@/components/ui/toaster";
 import { BrandHeader } from "@/components/brand-header";
 
 export const metadata: Metadata = {
-  title: "M.I.Ready",
-  description: "A fun and interactive quiz app.",
+  title: "M.I.Ready | Test & Exam Prep | miready.vercel.app",
+  description:
+    "Check if you are ready for your next test or exam. grind smarter, not harder.",
+  metadataBase: new URL("https://miready.vercel.app"),
+  alternates: {
+    canonical: "/",
+  },
+  keywords: [
+    "M.I.Ready | MIReady",
+    "M.I.Ready Test Prep App | MIReady Test Prep App",
+    "M.I.Ready Exam Prep App | MIReady Exam Prep App",
+    "M.I.Ready Test & Exam Prep App | MIReady Test & Exam Prep App",
+    "M.I.Ready Test Prep App | MIReady Test Prep App",
+  ],
 };
 
 export default function RootLayout({
@@ -29,6 +41,10 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap"
           rel="stylesheet"
+        />
+        <meta
+          name="google-site-verification"
+          content="c6D4rOmvzTEg62pUwm0zVO7ydK2j9k-Zyd-HyVAt0dU"
         />
       </head>
       <body className="font-body antialiased">
