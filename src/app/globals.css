@@ -99,3 +99,32 @@ body {
     color: hsl(var(--accent-foreground));
   }
 }
+
+@layer components {
+  /* Auto-advance countdown timer — sticker-outline track, Loop Yellow fill. */
+  .timer-progress {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 0.875rem;
+    border: 3px solid hsl(var(--foreground));
+    border-radius: 999px;
+    background: hsl(var(--muted));
+    overflow: hidden;
+  }
+  .timer-progress::-webkit-progress-bar {
+    background: hsl(var(--muted));
+    border-radius: 999px;
+  }
+  .timer-progress::-webkit-progress-value {
+    background: hsl(var(--accent));
+    border-radius: 999px;
+    transition: inline-size 1s linear;
+  }
+  .timer-progress::-moz-progress-bar {
+    background: hsl(var(--accent));
+    border-radius: 999px;
+  }
+}

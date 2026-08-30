@@ -11,6 +11,8 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useSettingStore } from "@/store/setting";
+import { useShallow } from "zustand/react/shallow";
 
 type QuizProps = {
   questions: Question[];
@@ -28,10 +30,45 @@ export function Quiz({
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [shuffled, setShuffled] = useState(false);
+  const [countDwn, setCountDwn] = useState(0);
+
+  const { autoNextQuestion, autoNextQuestionDelay } = useSettingStore(
+    useShallow((state) => ({
+      autoNextQuestion: state.autoNextQuestion,
+      autoNextQuestionDelay: state.autoNextQuestionDelay,
+    })),
+  );
 
   useEffect(() => {
-    // Shuffle questions on component mount on the client-side to avoid hydration mismatch
-    // and only if they haven't been shuffled yet.
+    if (autoNextQuestion && isAnswered) {
+      setCountDwn(autoNextQuestionDelay);
+      const timer = setTimeout(() => {
+        if (currentQuestionIndex < questions.length - 1) {
+          setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+          setSelectedAnswer(null);
+          setIsAnswered(false);
+        }
+      }, autoNextQuestionDelay * 1000);
+
+      const countdownTimer = setInterval(() => {
+        setCountDwn((prevCount) => {
+          if (prevCount > 0) {
+            return prevCount - 1;
+          } else {
+            clearInterval(countdownTimer);
+            return 0;
+          }
+        });
+      }, 1000);
+
+      return () => {
+        clearTimeout(timer);
+        clearInterval(countdownTimer);
+      };
+    }
+  }, [autoNextQuestion, autoNextQuestionDelay, isAnswered]);
+
+  useEffect(() => {
     if (!shuffled) {
       const shuffledQuestions = [...initialQuestions].sort(
         () => Math.random() - 0.5,
@@ -90,6 +127,7 @@ export function Quiz({
     setIsAnswered(false);
     setScore(0);
     setShowResults(false);
+    setCountDwn(0);
   };
 
   if (questions.length === 0) {
@@ -145,14 +183,32 @@ export function Quiz({
         isAnswered={isAnswered}
         correctAnswer={currentQuestion.correctAnswer}
       />
-      <div className="mt-6 flex justify-end px-4 pb-4">
+      <div className="mt-6 flex flex-wrap items-center justify-end gap-4 px-4 pb-4">
         {isAnswered ? (
-          <Button onClick={handleNextQuestion}>
-            {currentQuestionIndex === questions.length - 1
-              ? "Show Results"
-              : "Next Question"}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <>
+            {autoNextQuestion && currentQuestionIndex < questions.length - 1 && (
+              <div className="flex flex-1 items-center gap-3">
+                <span className="font-code text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
+                  Next in
+                </span>
+                <progress
+                  className="timer-progress w-full max-w-[200px] flex-1"
+                  value={countDwn}
+                  max={autoNextQuestionDelay}
+                  aria-label={`Advancing to the next question in ${countDwn} seconds`}
+                />
+                <span className="font-code text-sm font-bold tabular-nums">
+                  {countDwn}s
+                </span>
+              </div>
+            )}
+            <Button onClick={handleNextQuestion}>
+              {currentQuestionIndex === questions.length - 1
+                ? "Show Results"
+                : "Next Question"}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </>
         ) : (
           <Button onClick={handleSubmitAnswer} disabled={!selectedAnswer}>
             Submit Answer
