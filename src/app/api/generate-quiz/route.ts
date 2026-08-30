@@ -1,4 +1,5 @@
-import { generateQuiz } from "@/lib/ai-clients/groq.client";
+// import { generateQuiz } from "@/lib/ai-clients/groq.client";
+import { generateQuiz } from "@/lib/ai-clients/mistral.client";
 import type { McqPromptConfig } from "@/lib/mcq-prompt";
 import { NextResponse } from "next/server";
 
