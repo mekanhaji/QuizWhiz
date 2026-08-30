@@ -1,9 +1,13 @@
+import { questionKey } from "@/lib/question-key";
+
 export type Question = {
   id: number;
+  key: string;
   question: string;
   options: string[];
   correctAnswer: string;
   explanation: string;
+  bookmarks?: string[];
 };
 
 export type UserQuestion = {
@@ -33,6 +37,7 @@ export const parseQuizQuestions = (jsonString: string): Question[] => {
 
     return {
       id: index + 1,
+      key: questionKey(q.question),
       question: q.question,
       options: q.option,
       correctAnswer: q.answer,

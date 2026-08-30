@@ -51,7 +51,7 @@ export function QuestionCard({
   };
 
   const options = useMemo(() => {
-    return question.options.sort(() => Math.random() - 0.5);
+    return [...question.options].sort(() => Math.random() - 0.5);
   }, [question.options]);
 
   const getIcon = (option: string) => {

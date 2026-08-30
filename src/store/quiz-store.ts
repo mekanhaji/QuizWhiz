@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { usePerformanceStore } from "@/store/performance-store";
 
 export type SavedQuiz = {
   name: string;
@@ -48,6 +49,7 @@ export const useQuizStore = create<QuizStore>()(
             (quiz) => quiz.quizId !== quizId,
           ),
         }));
+        usePerformanceStore.getState().resetQuizPerf(quizId);
       },
       /**
        * `deprecated` Use startSavedQuizzes
