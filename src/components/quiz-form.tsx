@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 import {
   Card,
   CardContent,
@@ -12,6 +13,62 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useQuizStore, type SavedQuiz } from "@/store/quiz-store";
+import { EMPTY_QUIZ_PERF, usePerformanceStore } from "@/store/performance-store";
+import { parseQuizQuestions } from "@/lib/quiz-data";
+import { cn } from "@/lib/utils";
+
+function SavedQuizPerformanceSummary({ quiz }: { quiz: SavedQuiz }) {
+  const quizPerf = usePerformanceStore(
+    (state) => state.perf[quiz.quizId] ?? EMPTY_QUIZ_PERF,
+  );
+
+  const totalQuestions = useMemo(() => {
+    try {
+      return parseQuizQuestions(quiz.json).length;
+    } catch {
+      return 0;
+    }
+  }, [quiz.json]);
+
+  const records = Object.values(quizPerf);
+
+  if (records.length === 0 || totalQuestions === 0) {
+    return (
+      <span className="text-xs text-muted-foreground">Not attempted yet</span>
+    );
+  }
+
+  const masteredCount = records.filter((r) => r.mastered).length;
+  const totalWrongCount = records.reduce((sum, r) => sum + r.wrongCount, 0);
+  const lastSeenAt = Math.max(...records.map((r) => r.lastSeenAt));
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-code text-xs text-muted-foreground">
+      <span>
+        Mastered{" "}
+        <span
+          className={cn(
+            "font-bold",
+            masteredCount === totalQuestions
+              ? "text-success"
+              : "text-foreground",
+          )}
+        >
+          {masteredCount}/{totalQuestions}
+        </span>
+      </span>
+      {totalWrongCount > 0 && (
+        <span>
+          Missed{" "}
+          <span className="font-bold text-destructive">
+            {totalWrongCount}x
+          </span>
+        </span>
+      )}
+      <span>{formatDistanceToNow(lastSeenAt, { addSuffix: true })}</span>
+    </div>
+  );
+}
 
 export function QuizForm() {
   const savedQuizzes = useQuizStore((state) => state.savedQuizzes);
@@ -79,16 +136,17 @@ export function QuizForm() {
                   key={quiz.quizId}
                   className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                 >
-                  <span className="font-medium flex-1 mb-2 sm:mb-0">
-                    {quiz.name}
-                  </span>
+                  <div className="flex-1 min-w-0 mb-2 sm:mb-0">
+                    <span className="font-medium block">{quiz.name}</span>
+                    <SavedQuizPerformanceSummary quiz={quiz} />
+                  </div>
                   <div className="flex gap-2">
                     <Button
                       variant="secondary"
                       size="sm"
                       onClick={() => loadQuizForEdit(quiz)}
                     >
-                      Load
+                      Edit
                     </Button>
                     <Button size="sm" onClick={() => startSavedQuiz(quiz)}>
                       Start

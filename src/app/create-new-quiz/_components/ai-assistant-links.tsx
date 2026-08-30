@@ -15,7 +15,7 @@ const aiAssistants = [
   {
     name: "Claude",
     buildUrl: (prompt: string) =>
-      `https://claude.ai/new?${new URLSearchParams({ prompt })}`,
+      `https://claude.ai/new?${new URLSearchParams({ q: prompt })}`,
   },
   {
     name: "Le Chat",

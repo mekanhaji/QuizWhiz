@@ -97,7 +97,11 @@ export default function QuizRunnerPage() {
       <h1 className="text-4xl font-headline font-bold text-center py-4 text-primary dark:text-primary-foreground">
         {quizTitle}
       </h1>
-      <Quiz questions={questions} onRestartQuiz={handleReturnHome} />
+      <Quiz
+        quizId={quizId}
+        questions={questions}
+        onRestartQuiz={handleReturnHome}
+      />
     </div>
   );
 }
