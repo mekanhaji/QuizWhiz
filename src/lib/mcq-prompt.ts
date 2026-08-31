@@ -66,6 +66,8 @@ export function normalizeMcqPromptConfig(
 
   if (!Number.isFinite(merged.numQuestions) || merged.numQuestions < 1) {
     merged.numQuestions = DEFAULT_MCQ_PROMPT_CONFIG.numQuestions;
+  } else {
+    merged.numQuestions = Math.min(Math.round(merged.numQuestions), 50);
   }
 
   if (
@@ -73,6 +75,11 @@ export function normalizeMcqPromptConfig(
     merged.optionsPerQuestion < 2
   ) {
     merged.optionsPerQuestion = DEFAULT_MCQ_PROMPT_CONFIG.optionsPerQuestion;
+  } else {
+    merged.optionsPerQuestion = Math.min(
+      Math.round(merged.optionsPerQuestion),
+      6,
+    );
   }
 
   return merged;
@@ -89,20 +96,20 @@ export function buildMcqPrompt(config: Partial<McqPromptConfig> = {}): string {
     ? "- Provide a clear explanation for each answer."
     : "- Set explanation to an empty string for every item.";
 
-  return MCQ_PROMPT_TEMPLATE.replace(
+  return MCQ_PROMPT_TEMPLATE.replaceAll(
     "{{{numQuestions}}}",
     String(normalized.numQuestions),
   )
-    .replace("{{{outputShape}}}", MCQ_JSON_OUTPUT_SHAPE)
-    .replace("{{{topics}}}", topics)
-    .replace("{{{difficulty}}}", String(normalized.difficulty))
-    .replace("{{{language}}}", normalized.language)
-    .replace(
+    .replaceAll("{{{outputShape}}}", MCQ_JSON_OUTPUT_SHAPE)
+    .replaceAll("{{{topics}}}", topics)
+    .replaceAll("{{{difficulty}}}", String(normalized.difficulty))
+    .replaceAll("{{{language}}}", normalized.language)
+    .replaceAll(
       "{{{includeExplanations}}}",
       String(normalized.includeExplanations),
     )
-    .replace("{{{optionsPerQuestion}}}", String(normalized.optionsPerQuestion))
-    .replace("{{{willAttachNotes}}}", String(normalized.willAttachNotes))
-    .replace("{{{notesRule}}}", notesRule)
-    .replace("{{{explanationRule}}}", explanationRule);
+    .replaceAll("{{{optionsPerQuestion}}}", String(normalized.optionsPerQuestion))
+    .replaceAll("{{{willAttachNotes}}}", String(normalized.willAttachNotes))
+    .replaceAll("{{{notesRule}}}", notesRule)
+    .replaceAll("{{{explanationRule}}}", explanationRule);
 }

@@ -8,6 +8,9 @@ body {
 
 @layer base {
   :root {
+    --font-display: "Baloo 2", ui-rounded, sans-serif;
+    --font-body: "Karla", sans-serif;
+    --font-mono: "Space Mono", monospace;
     --background: 46 76% 93%;
     --foreground: 60 24% 6%;
     --card: 0 0% 100%;

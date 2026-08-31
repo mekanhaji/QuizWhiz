@@ -1,9 +1,8 @@
 "use client";
 
-import { PromptSuggestionCard } from "@/app/create-new-quiz/_components/prompt-suggestion-card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { PasteButton } from "@/components/paste-button";
+import { GenerateTab } from "@/app/create-new-quiz/_components/generate-tab";
+import { PromptTab } from "@/app/create-new-quiz/_components/prompt-tab";
+import { QuizConfigFields } from "@/app/create-new-quiz/_components/quiz-config-fields";
 import {
   Card,
   CardContent,
@@ -11,21 +10,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+  buildMcqPrompt,
+  normalizeMcqPromptConfig,
+  type McqPromptConfig,
+} from "@/lib/mcq-prompt";
+import { extractJsonArray } from "@/lib/quiz-data";
 import { useQuizStore } from "@/store/quiz-store";
-import { AlertCircle, Save, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type UserQuestion = {
   question: string;
@@ -39,12 +33,28 @@ type DraftPayload = {
   name?: string;
 };
 
+const DEFAULTS = normalizeMcqPromptConfig();
+
 export function CreateQuizForm() {
+  const [tab, setTab] = useState<"prompt" | "generate">("prompt");
+
+  const [quizName, setQuizName] = useState("");
+  const [topicsInput, setTopicsInput] = useState(DEFAULTS.topics.join(", "));
+  const [numQuestions, setNumQuestions] = useState(DEFAULTS.numQuestions);
+  const [difficulty, setDifficulty] = useState(String(DEFAULTS.difficulty));
+  const [optionsPerQuestion, setOptionsPerQuestion] = useState(
+    DEFAULTS.optionsPerQuestion,
+  );
+  const [language, setLanguage] = useState(DEFAULTS.language);
+  const [includeExplanations, setIncludeExplanations] = useState(
+    DEFAULTS.includeExplanations,
+  );
+  const [willAttachNotes, setWillAttachNotes] = useState(
+    DEFAULTS.willAttachNotes,
+  );
+
   const [jsonInput, setJsonInput] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [quizName, setQuizName] = useState("");
-  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
-  const [isPromptOpen, setIsPromptOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addSavedQuiz = useQuizStore((state) => state.addSavedQuiz);
   const hasHydrated = useQuizStore((state) => state.hasHydrated);
@@ -64,6 +74,7 @@ export function CreateQuizForm() {
       if (typeof parsed.name === "string") {
         setQuizName(parsed.name);
       }
+      setTab("prompt");
     } catch (parseError) {
       console.warn("Failed to load draft quiz", parseError);
     } finally {
@@ -71,13 +82,43 @@ export function CreateQuizForm() {
     }
   }, []);
 
+  const runtimeConfig: McqPromptConfig = useMemo(() => {
+    const parsedTopics = topicsInput
+      .split(",")
+      .map((topic) => topic.trim())
+      .filter(Boolean);
+
+    return normalizeMcqPromptConfig({
+      numQuestions,
+      difficulty,
+      topics: parsedTopics,
+      language,
+      includeExplanations,
+      optionsPerQuestion,
+      willAttachNotes,
+    });
+  }, [
+    difficulty,
+    includeExplanations,
+    language,
+    numQuestions,
+    optionsPerQuestion,
+    topicsInput,
+    willAttachNotes,
+  ]);
+
+  const generatedPrompt = useMemo(
+    () => buildMcqPrompt(runtimeConfig),
+    [runtimeConfig],
+  );
+
   const validateJson = (jsonString: string): boolean => {
     try {
       if (!jsonString.trim()) {
         setError("JSON data cannot be empty.");
         return false;
       }
-      const data: UserQuestion[] = JSON.parse(jsonString);
+      const data: UserQuestion[] = JSON.parse(extractJsonArray(jsonString));
 
       if (!Array.isArray(data) || data.length === 0) {
         setError(
@@ -109,7 +150,7 @@ export function CreateQuizForm() {
 
   const deriveQuizName = (jsonString: string) => {
     try {
-      const data: UserQuestion[] = JSON.parse(jsonString);
+      const data: UserQuestion[] = JSON.parse(extractJsonArray(jsonString));
       const firstQuestion = data?.[0]?.question?.trim();
       if (firstQuestion) {
         return firstQuestion.length > 60
@@ -122,13 +163,11 @@ export function CreateQuizForm() {
     return "Custom Quiz";
   };
 
-  const handleOpenSaveDialog = () => {
-    if (validateJson(jsonInput)) {
-      setIsSaveModalOpen(true);
-    }
-  };
-
   const handleSaveQuiz = () => {
+    if (!validateJson(jsonInput)) {
+      return;
+    }
+
     if (!hasHydrated) {
       setError(
         "Saved quizzes are still loading. Please try again in a moment.",
@@ -144,7 +183,6 @@ export function CreateQuizForm() {
         json: jsonInput,
       });
       setQuizName(finalName);
-      setIsSaveModalOpen(false);
       router.push("/");
     } catch (storageError) {
       setError("Failed to save quiz. Please try again.");
@@ -169,128 +207,72 @@ export function CreateQuizForm() {
   };
 
   return (
-    <>
-      <Card className="mt-6">
-        <CardHeader className="space-y-2 flex flex-row justify-between">
-          <div>
-            <CardTitle>Create Your Quiz</CardTitle>
-            <CardDescription>
-              Paste your quiz JSON, upload a JSON file, and save it.
-            </CardDescription>
-          </div>
-          <Button onClick={() => setIsPromptOpen(true)}>Prompt For AI</Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle>Create Your Quiz</CardTitle>
+        <CardDescription>
+          Set up your quiz, then generate questions with AI or paste your own.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/json"
+          className="hidden"
+          onChange={handleFileChange}
+        />
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json"
-            className="hidden"
-            onChange={handleFileChange}
-          />
+        <QuizConfigFields
+          quizName={quizName}
+          topicsInput={topicsInput}
+          numQuestions={numQuestions}
+          difficulty={difficulty}
+          optionsPerQuestion={optionsPerQuestion}
+          language={language}
+          includeExplanations={includeExplanations}
+          onQuizNameChange={setQuizName}
+          onTopicsInputChange={setTopicsInput}
+          onNumQuestionsChange={setNumQuestions}
+          onDifficultyChange={setDifficulty}
+          onOptionsPerQuestionChange={setOptionsPerQuestion}
+          onLanguageChange={setLanguage}
+          onIncludeExplanationsChange={setIncludeExplanations}
+        />
 
-          <div className="space-y-2">
-            <Label htmlFor="quiz-name-input">Quiz Name</Label>
-            <Input
-              id="quiz-name-input"
-              value={quizName}
-              onChange={(event) => setQuizName(event.target.value)}
-              placeholder="e.g., JavaScript Basics"
-            />
-          </div>
+        <Tabs value={tab} onValueChange={(value) => setTab(value as typeof tab)}>
+          <TabsList>
+            <TabsTrigger value="prompt">Prompt for AI</TabsTrigger>
+            <TabsTrigger value="generate">Generate with AI</TabsTrigger>
+          </TabsList>
 
-          <div className="space-y-2">
-            <div className="flex items-end justify-between mb-4">
-              <Label htmlFor="json-input">Quiz JSON Data</Label>
-              <div className="flex items-center gap-2">
-                <PasteButton
-                  onPaste={(text) => {
-                    setJsonInput(text);
-                    setError(null);
-                  }}
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={!jsonInput}
-                  onClick={() => {
-                    setJsonInput("");
-                    setError(null);
-                  }}
-                >
-                  Clear Text
-                </Button>
-              </div>
-            </div>
-            <Textarea
-              id="json-input"
-              value={jsonInput}
-              onChange={(event) => {
-                setJsonInput(event.target.value);
+          <TabsContent value="prompt">
+            <PromptTab
+              prompt={generatedPrompt}
+              willAttachNotes={willAttachNotes}
+              onWillAttachNotesChange={setWillAttachNotes}
+              jsonInput={jsonInput}
+              onJsonInputChange={(value) => {
+                setJsonInput(value);
                 setError(null);
               }}
-              placeholder='[{"question": "...", "option": ["..."], "answer": "...", "explanation": "..."}]'
-              rows={10}
+              error={error}
+              hasHydrated={hasHydrated}
+              onSave={handleSaveQuiz}
+              onUploadClick={() => fileInputRef.current?.click()}
             />
-          </div>
+          </TabsContent>
 
-          <div className="grid gap-2 sm:grid-cols-2">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={handleOpenSaveDialog}
-              disabled={!jsonInput || !hasHydrated}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Save Quiz
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload className="mr-2 h-4 w-4" />
-              Upload JSON
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <PromptSuggestionCard
-        open={isPromptOpen}
-        onOpenChange={setIsPromptOpen}
-      />
-
-      <Dialog open={isSaveModalOpen} onOpenChange={setIsSaveModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Save Quiz</DialogTitle>
-          </DialogHeader>
-          <div className="py-2 space-y-2">
-            <Label htmlFor="quiz-name">Quiz Name</Label>
-            <Input
-              id="quiz-name"
-              value={quizName}
-              onChange={(event) => setQuizName(event.target.value)}
-              placeholder="e.g., General Knowledge"
+          <TabsContent value="generate">
+            <GenerateTab
+              config={runtimeConfig}
+              quizName={quizName}
+              deriveQuizName={deriveQuizName}
+              hasHydrated={hasHydrated}
             />
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button onClick={handleSaveQuiz}>Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 }
