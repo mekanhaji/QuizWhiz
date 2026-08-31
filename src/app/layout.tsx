@@ -1,25 +1,75 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Baloo_2, Karla, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ConditionalHeader } from "@/components/conditional-header";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { MainShell } from "@/components/main-shell";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site-config";
+
+const display = Baloo_2({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const body = Karla({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
+  display: "swap",
+});
+
+const code = Space_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-code",
+  display: "swap",
+});
+
+export const viewport: Viewport = {
+  themeColor: "#2CA14C",
+};
 
 export const metadata: Metadata = {
-  title: "M.I.Ready | Test & Exam Prep | miready.vercel.app",
-  description:
-    "Check if you are ready for your next test or exam. grind smarter, not harder.",
-  metadataBase: new URL("https://miready.vercel.app"),
-  alternates: {
-    canonical: "/",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "M.I.Ready — AI Quiz Maker & Adaptive MCQ Practice",
+    template: "%s | M.I.Ready",
   },
-  keywords: [
-    "M.I.Ready | MIReady",
-    "M.I.Ready Test Prep App | MIReady Test Prep App",
-    "M.I.Ready Exam Prep App | MIReady Exam Prep App",
-    "M.I.Ready Test & Exam Prep App | MIReady Test & Exam Prep App",
-    "M.I.Ready Test Prep App | MIReady Test Prep App",
-  ],
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  verification: {
+    google: "c6D4rOmvzTEg62pUwm0zVO7ydK2j9k-Zyd-HyVAt0dU",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
+  openGraph: {
+    siteName: SITE_NAME,
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -28,26 +78,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="apple-touch-icon" href="/logo.png" />
-        <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-        <link rel="manifest" href="/site.webmanifest" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
-        <meta
-          name="google-site-verification"
-          content="c6D4rOmvzTEg62pUwm0zVO7ydK2j9k-Zyd-HyVAt0dU"
-        />
-      </head>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${body.variable} ${display.variable} ${code.variable}`}
+    >
       <body className="font-body antialiased">
         <ConditionalHeader />
         <main>

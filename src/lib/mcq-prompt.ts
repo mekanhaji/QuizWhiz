@@ -23,22 +23,26 @@ export const DEFAULT_MCQ_PROMPT_CONFIG: McqPromptConfig = {
   willAttachNotes: false,
 };
 
-export const MCQ_PROMPT_TEMPLATE = `Create {{{numQuestions}}} multiple-choice questions in JSON format.
-The JSON structure must be {{{outputShape}}}.
+export const MCQ_PROMPT_TEMPLATE = `You are an expert quiz author. Create exactly {{{numQuestions}}} multiple-choice questions and return them as a single JSON array.
 
-Parameters:
-- topics: {{{topics}}}
-- difficulty: {{{difficulty}}}
-- language: {{{language}}}
-- includeExplanations: {{{includeExplanations}}}
-- optionsPerQuestion: {{{optionsPerQuestion}}}
-- willAttachNotes: {{{willAttachNotes}}}
+Topics: {{{topics}}}
+Difficulty: {{{difficulty}}} (easy = basic recall, medium = understanding and application, hard = analysis, edge cases, multi-step reasoning)
+Language: write every question, option, and explanation in {{{language}}}.
 
-Requirements:
-- Return ONLY valid JSON (no markdown, no commentary).
-- For each question, provide exactly {{{optionsPerQuestion}}} options.
-- The answer must be exactly one of the options.
-- Keep answer choices concise and non-overlapping.
+Output format return ONLY the raw JSON array. No markdown code fences, no commentary before or after.
+The structure must be exactly: {{{outputShape}}}
+
+Example item (illustrative only copy the key names exactly; note "option" is singular):
+{ "question": "Which planet is closest to the Sun?", "option": ["Venus", "Mercury", "Earth", "Mars"], "answer": "Mercury", "explanation": "Mercury orbits nearest to the Sun, at an average distance of about 58 million km." }
+
+Rules:
+- Give each question exactly {{{optionsPerQuestion}}} options with exactly one correct answer.
+- "answer" must match one of that question's options character for character.
+- Make wrong options plausible and similar to the correct one in length and style. Never use "All of the above", "None of the above", or combined options like "Both A and B".
+- Vary the position of the correct answer across questions.
+- Do not repeat or trivially rephrase questions; spread coverage evenly across the listed topics.
+- Every question must be answerable on its own, without seeing the other questions.
+- Output strict JSON: double quotes for all strings, quotes inside text escaped, no trailing commas.
 {{{notesRule}}}
 {{{explanationRule}}}`;
 
@@ -83,26 +87,24 @@ export function buildMcqPrompt(config: Partial<McqPromptConfig> = {}): string {
   const topics =
     normalized.topics.join(", ") || DEFAULT_MCQ_PROMPT_CONFIG.topics[0];
   const notesRule = normalized.willAttachNotes
-    ? "- The user will attach notes. Use the attached notes as the primary source and align questions to them."
-    : "- If no notes are attached, rely on the provided topics and general domain knowledge.";
+    ? "- I am attaching notes. Base every question on the attached notes and do not introduce facts they don't support; use the listed topics only to prioritize within the notes."
+    : "- Base the questions on the listed topics using accurate, well-established knowledge.";
   const explanationRule = normalized.includeExplanations
-    ? "- Provide a clear explanation for each answer."
-    : "- Set explanation to an empty string for every item.";
+    ? '- Write a 1-2 sentence "explanation" for each question stating why the correct answer is right (and, when useful, why the closest wrong option is wrong).'
+    : '- Set "explanation" to an empty string ("") for every question.';
 
-  return MCQ_PROMPT_TEMPLATE.replace(
+  return MCQ_PROMPT_TEMPLATE.replaceAll(
     "{{{numQuestions}}}",
     String(normalized.numQuestions),
   )
-    .replace("{{{outputShape}}}", MCQ_JSON_OUTPUT_SHAPE)
-    .replace("{{{topics}}}", topics)
-    .replace("{{{difficulty}}}", String(normalized.difficulty))
-    .replace("{{{language}}}", normalized.language)
-    .replace(
-      "{{{includeExplanations}}}",
-      String(normalized.includeExplanations),
+    .replaceAll("{{{outputShape}}}", MCQ_JSON_OUTPUT_SHAPE)
+    .replaceAll("{{{topics}}}", topics)
+    .replaceAll("{{{difficulty}}}", String(normalized.difficulty))
+    .replaceAll("{{{language}}}", normalized.language)
+    .replaceAll(
+      "{{{optionsPerQuestion}}}",
+      String(normalized.optionsPerQuestion),
     )
-    .replace("{{{optionsPerQuestion}}}", String(normalized.optionsPerQuestion))
-    .replace("{{{willAttachNotes}}}", String(normalized.willAttachNotes))
-    .replace("{{{notesRule}}}", notesRule)
-    .replace("{{{explanationRule}}}", explanationRule);
+    .replaceAll("{{{notesRule}}}", notesRule)
+    .replaceAll("{{{explanationRule}}}", explanationRule);
 }
