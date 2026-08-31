@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ConditionalHeader } from "@/components/conditional-header";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import { MainShell } from "@/components/main-shell";
 
 export const metadata: Metadata = {
@@ -53,6 +54,7 @@ export default function RootLayout({
           <MainShell>{children}</MainShell>
         </main>
         <Toaster />
+        <GoogleAnalytics />
       </body>
     </html>
   );
