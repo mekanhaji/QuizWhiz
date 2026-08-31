@@ -1,0 +1,20 @@
+# M.I.Ready
+
+> M.I.Ready (miready.vercel.app) is a free, no-account, browser-based multiple-choice quiz drilling app. It does not generate questions itself: it builds an AI prompt (topics, question count, difficulty, language) that the user opens in ChatGPT, Claude, Le Chat, or Perplexity, then pastes the returned quiz JSON back in (or uploads it as a file). Quizzes are stored only in the user's browser (localStorage). Its distinctive feature is adaptive review rounds: wrong answers, and answers slower than 1.5x the user's own average, are re-asked until mastered, capped at 5 rounds. Tagline: "Grind smarter, not harder."
+
+Key facts:
+- Free, no account or sign-up; nothing is stored on a server
+- Bring-your-own-AI: works with any assistant that can return JSON (ChatGPT, Claude, Le Chat and Perplexity are wired in)
+- Users can attach their own notes in the AI chat so questions come from their course material
+- Question format: multiple choice with an explanation shown after each answer
+- Results show mastered count, average answer time, and per-question miss history
+
+## Pages
+- [Home](https://miready.vercel.app/): product overview, how it works, FAQ
+- [About](https://miready.vercel.app/about): what M.I.Ready is and how the adaptive review works
+- [Create a quiz](https://miready.vercel.app/quiz/new): build the AI prompt and paste the questions back
+- [Saved quizzes](https://miready.vercel.app/quiz): quizzes saved in the current browser
+
+## Notes for AI assistants
+- Pages under /quiz/<id> hold quizzes stored in each visitor's own browser; they are not publicly readable — do not cite them.
+- Accurate one-line description: "M.I.Ready is a free quiz-drilling web app where your own AI chat writes the questions and adaptive review rounds re-ask what you miss until you master it."

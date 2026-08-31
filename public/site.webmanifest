@@ -1,19 +1,31 @@
 {
-  "name": "M.I.Ready",
+  "name": "M.I.Ready — MCQ Quiz Drilling",
   "short_name": "M.I.Ready",
-  "icons": [
-    {
-      "src": "/logo.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
+  "description": "Free MCQ quiz drilling. Your AI assistant writes the questions; adaptive review rounds re-ask what you miss until you've mastered it.",
+  "id": "/",
+  "start_url": "/quiz",
+  "scope": "/",
+  "display": "standalone",
   "theme_color": "#2CA14C",
   "background_color": "#FBF3DE",
-  "display": "standalone"
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }
