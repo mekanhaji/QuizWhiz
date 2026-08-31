@@ -1,9 +1,5 @@
-import { QuizForm } from "@/components/quiz-form";
+import { LandingPage } from "@/app/_components/landing-page";
 
 export default function Home() {
-  return (
-    <div className="w-full max-w-2xl">
-      <QuizForm />
-    </div>
-  );
+  return <LandingPage />;
 }

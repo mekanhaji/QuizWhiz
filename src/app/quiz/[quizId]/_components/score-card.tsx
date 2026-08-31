@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, RefreshCw } from "lucide-react";
-import type { QuestionOutcome } from "@/app/[quizId]/_components/quiz-machine";
+import type { QuestionOutcome } from "@/app/quiz/[quizId]/_components/quiz-machine";
 import { cn } from "@/lib/utils";
 
 type ScoreCardProps = {
@@ -162,7 +162,7 @@ export function ScoreCard({
       <CardFooter className="flex flex-col gap-2 sm:flex-row sm:justify-center">
         <Button variant="outline" onClick={onShowAllQuizzes}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          All Qize
+          All Quizzes
         </Button>
         <Button onClick={onRestart}>
           <RefreshCw className="mr-2 h-4 w-4" />

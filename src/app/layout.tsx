@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-// @ts-expect-error Next.js handles global CSS side-effect imports at build time.
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { BrandHeader } from "@/components/brand-header";
+import { ConditionalHeader } from "@/components/conditional-header";
+import { MainShell } from "@/components/main-shell";
 
 export const metadata: Metadata = {
   title: "M.I.Ready | Test & Exam Prep | miready.vercel.app",
@@ -48,9 +48,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <BrandHeader />
-        <main className="flex flex-col items-center justify-center bg-background px-4 sm:px-8 mt-2">
-          {children}
+        <ConditionalHeader />
+        <main>
+          <MainShell>{children}</MainShell>
         </main>
         <Toaster />
       </body>
