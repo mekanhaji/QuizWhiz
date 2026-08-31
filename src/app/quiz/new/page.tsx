@@ -1,4 +1,4 @@
-import { CreateQuizForm } from "@/app/create-new-quiz/_components/create-quiz-form";
+import { CreateQuizForm } from "@/app/quiz/new/_components/create-quiz-form";
 
 export default function CreateNewQuizPage() {
   return (

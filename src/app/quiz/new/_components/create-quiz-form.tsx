@@ -1,6 +1,6 @@
 "use client";
 
-import { PromptSuggestionCard } from "@/app/create-new-quiz/_components/prompt-suggestion-card";
+import { PromptSuggestionCard } from "@/app/quiz/new/_components/prompt-suggestion-card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { PasteButton } from "@/components/paste-button";
@@ -145,7 +145,7 @@ export function CreateQuizForm() {
       });
       setQuizName(finalName);
       setIsSaveModalOpen(false);
-      router.push("/");
+      router.push("/quiz");
     } catch (storageError) {
       setError("Failed to save quiz. Please try again.");
       console.warn("Failed to save quiz", storageError);

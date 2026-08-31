@@ -9,7 +9,7 @@ export function BrandHeader() {
       <header className="mx-auto w-full max-w-2xl rounded-[18px] border-[3px] border-foreground bg-card text-card-foreground shadow-[8px_8px_0_hsl(var(--foreground))]">
         <div className="flex w-full items-center justify-between px-4 py-3 sm:px-6">
           <Link
-            href="/"
+            href="/quiz"
             className="flex items-center gap-3 rounded-md text-foreground transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <img
