@@ -1,6 +1,6 @@
 "use client";
 
-import { GenerateTab } from "@/app/create-new-quiz/_components/generate-tab";
+import { GenerateTab } from "@/app/quiz/new/_components/generate-tab";
 import { PromptTab } from "@/app/create-new-quiz/_components/prompt-tab";
 import { QuizConfigFields } from "@/app/create-new-quiz/_components/quiz-config-fields";
 import {
@@ -183,7 +183,8 @@ export function CreateQuizForm() {
         json: jsonInput,
       });
       setQuizName(finalName);
-      router.push("/");
+      setIsSaveModalOpen(false);
+      router.push("/quiz");
     } catch (storageError) {
       setError("Failed to save quiz. Please try again.");
       console.warn("Failed to save quiz", storageError);
@@ -240,7 +241,10 @@ export function CreateQuizForm() {
           onIncludeExplanationsChange={setIncludeExplanations}
         />
 
-        <Tabs value={tab} onValueChange={(value) => setTab(value as typeof tab)}>
+        <Tabs
+          value={tab}
+          onValueChange={(value) => setTab(value as typeof tab)}
+        >
           <TabsList>
             <TabsTrigger value="prompt">Prompt for AI</TabsTrigger>
             <TabsTrigger value="generate">Generate with AI</TabsTrigger>

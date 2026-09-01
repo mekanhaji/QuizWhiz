@@ -1,6 +1,6 @@
 "use client";
 
-import { Quiz } from "@/app/[quizId]/_components/quiz";
+import { Quiz } from "@/app/quiz/[quizId]/_components/quiz";
 import type { Question } from "@/lib/quiz-data";
 import { parseQuizQuestions } from "@/lib/quiz-data";
 import { useQuizStore } from "@/store/quiz-store";
@@ -80,7 +80,7 @@ export default function QuizRunnerPage() {
     loadQuiz();
   }, [quizId, hasHydrated, findSavedQuizById]);
 
-  const handleReturnHome = () => router.push("/");
+  const handleReturnHome = () => router.push("/quiz");
 
   if (isLoading) {
     return <LoadingQuizCard />;

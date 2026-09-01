@@ -78,7 +78,7 @@ export function QuizForm() {
 
   useEffect(() => {
     if (hasHydrated && savedQuizzes.length === 0) {
-      router.replace("/create-new-quiz");
+      router.replace("/quiz/new");
     }
   }, [hasHydrated, savedQuizzes, router]);
 
@@ -91,7 +91,7 @@ export function QuizForm() {
     } catch (storageError) {
       console.warn("Failed to persist quiz payload", storageError);
     }
-    router.push(`/${quiz.quizId}`);
+    router.push(`/quiz/${quiz.quizId}`);
   };
 
   const loadQuizForEdit = (quiz: SavedQuiz) => {
@@ -103,7 +103,7 @@ export function QuizForm() {
     } catch (storageError) {
       console.warn("Failed to persist quiz draft", storageError);
     }
-    router.push("/create-new-quiz");
+    router.push("/quiz/new");
   };
 
   const deleteQuiz = (quizIdToDelete: string) => {
@@ -120,7 +120,7 @@ export function QuizForm() {
               Load a previously saved quiz to start or edit it.
             </CardDescription>
           </div>
-          <Button size="sm" onClick={() => router.push("/create-new-quiz")}>
+          <Button size="sm" onClick={() => router.push("/quiz/new")}>
             Add New Quiz
           </Button>
         </CardHeader>

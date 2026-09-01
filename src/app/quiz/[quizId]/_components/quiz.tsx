@@ -5,14 +5,14 @@ import type { Question } from "@/lib/quiz-data";
 import {
   QuestionCard,
   QuestionCardSkeleton,
-} from "@/app/[quizId]/_components/question-card";
-import { ScoreCard } from "@/app/[quizId]/_components/score-card";
+} from "@/app/quiz/[quizId]/_components/question-card";
+import { ScoreCard } from "@/app/quiz/[quizId]/_components/score-card";
 import {
   buildOutcomes,
   initialQuizState,
   quizReducer,
   type RoundSettings,
-} from "@/app/[quizId]/_components/quiz-machine";
+} from "@/app/quiz/[quizId]/_components/quiz-machine";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";

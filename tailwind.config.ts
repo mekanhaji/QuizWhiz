@@ -10,10 +10,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ["Karla", "sans-serif"],
-        headline: ["Baloo 2", "ui-rounded", "sans-serif"],
-        display: ["Baloo 2", "ui-rounded", "sans-serif"],
-        code: ["Space Mono", "monospace"],
+        body: ["var(--font-body)", "Karla", "sans-serif"],
+        headline: ["var(--font-display)", "Baloo 2", "ui-rounded", "sans-serif"],
+        display: ["var(--font-display)", "Baloo 2", "ui-rounded", "sans-serif"],
+        code: ["var(--font-code)", "Space Mono", "monospace"],
       },
       colors: {
         background: "hsl(var(--background))",

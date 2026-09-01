@@ -14,7 +14,7 @@ export type UserQuestion = {
   question: string;
   option: string[];
   answer: string;
-  explanation: string;
+  explanation?: string;
   bookmarks?: string[];
 };
 
@@ -44,10 +44,8 @@ export const parseQuizQuestions = (jsonString: string): Question[] => {
     if (!q.question || !Array.isArray(q.option) || !q.option.length) {
       throw new Error(`Question ${index + 1} is missing text or options.`);
     }
-    if (!q.answer || !q.explanation) {
-      throw new Error(
-        `Question ${index + 1} is missing an answer or explanation.`,
-      );
+    if (!q.answer) {
+      throw new Error(`Question ${index + 1} is missing an answer.`);
     }
 
     return {
@@ -56,7 +54,7 @@ export const parseQuizQuestions = (jsonString: string): Question[] => {
       question: q.question,
       options: q.option,
       correctAnswer: q.answer,
-      explanation: q.explanation,
+      explanation: q.explanation ?? "",
       bookmarks: q.bookmarks || [],
     };
   });
