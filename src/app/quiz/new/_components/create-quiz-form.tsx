@@ -1,8 +1,8 @@
 "use client";
 
 import { GenerateTab } from "@/app/quiz/new/_components/generate-tab";
-import { PromptTab } from "@/app/create-new-quiz/_components/prompt-tab";
-import { QuizConfigFields } from "@/app/create-new-quiz/_components/quiz-config-fields";
+import { PromptTab } from "@/app/quiz/new/_components/prompt-tab";
+import { QuizConfigFields } from "@/app/quiz/new/_components/quiz-config-fields";
 import {
   Card,
   CardContent,
@@ -183,7 +183,6 @@ export function CreateQuizForm() {
         json: jsonInput,
       });
       setQuizName(finalName);
-      setIsSaveModalOpen(false);
       router.push("/quiz");
     } catch (storageError) {
       setError("Failed to save quiz. Please try again.");
