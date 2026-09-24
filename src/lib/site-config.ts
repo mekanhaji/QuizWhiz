@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://miready.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://miready.kanhaji.dev";
 
 export const SITE_NAME = "M.I.Ready";
 export const SITE_ALT_NAME = "MIReady";

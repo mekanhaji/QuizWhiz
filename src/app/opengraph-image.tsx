@@ -41,134 +41,142 @@ export default async function OgImage() {
   ]);
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: CREAM,
+        fontFamily: displayFont ? "Baloo 2" : "sans-serif",
+      }}
+    >
+      {/* offset shadow block behind the sticker card */}
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          position: "absolute",
+          width: 1040,
+          height: 540,
+          background: INK,
+          transform: "translate(16px, 16px)",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          width: 1040,
+          height: 540,
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          flexDirection: "column",
           background: CREAM,
-          fontFamily: displayFont ? "Baloo 2" : "sans-serif",
+          border: `6px solid ${INK}`,
+          padding: "48px 64px",
         }}
       >
-        {/* offset shadow block behind the sticker card */}
+        {/* brand lockup */}
+        <div
+          style={{ display: "flex", alignItems: "center", marginBottom: 28 }}
+        >
+          {logoDataUri && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoDataUri}
+              width={84}
+              height={56}
+              alt=""
+              style={{ marginRight: 14 }}
+            />
+          )}
+          <div
+            style={{
+              display: "flex",
+              background: GREEN,
+              color: CREAM,
+              padding: "4px 14px",
+              borderRadius: 14,
+              fontWeight: 700,
+              fontSize: 34,
+            }}
+          >
+            M.I.R
+          </div>
+          <div
+            style={{
+              display: "flex",
+              color: INK,
+              fontWeight: 700,
+              fontSize: 34,
+            }}
+          >
+            eady
+          </div>
+        </div>
+
+        {/* headline */}
         <div
           style={{
-            position: "absolute",
-            width: 1040,
-            height: 540,
-            background: INK,
-            transform: "translate(16px, 16px)",
-          }}
-        />
-        <div
-          style={{
-            position: "relative",
-            width: 1040,
-            height: 540,
             display: "flex",
             flexDirection: "column",
-            background: CREAM,
-            border: `6px solid ${INK}`,
-            padding: "48px 64px",
+            fontWeight: 700,
+            fontSize: 84,
+            lineHeight: 1.05,
+            color: INK,
+            letterSpacing: -1,
+            marginBottom: 24,
           }}
         >
-          {/* brand lockup */}
-          <div style={{ display: "flex", alignItems: "center", marginBottom: 28 }}>
-            {logoDataUri && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={logoDataUri}
-                width={84}
-                height={56}
-                alt=""
-                style={{ marginRight: 14 }}
-              />
-            )}
-            <div
-              style={{
-                display: "flex",
-                background: GREEN,
-                color: CREAM,
-                padding: "4px 14px",
-                borderRadius: 14,
-                fontWeight: 700,
-                fontSize: 34,
-              }}
-            >
-              M.I.R
-            </div>
-            <div style={{ display: "flex", color: INK, fontWeight: 700, fontSize: 34 }}>
-              eady
-            </div>
+          <div style={{ display: "flex" }}>Grind smarter,</div>
+          <div style={{ display: "flex" }}>
+            not&nbsp;<span style={{ color: GREEN }}>harder.</span>
           </div>
+        </div>
 
-          {/* headline */}
+        {/* subline */}
+        <div
+          style={{
+            display: "flex",
+            fontSize: 26,
+            lineHeight: 1.35,
+            color: "#4A4A3A",
+            fontFamily: "sans-serif",
+            fontWeight: 400,
+            maxWidth: 900,
+            marginBottom: 28,
+          }}
+        >
+          Your AI writes the questions. M.I.Ready drills you until they stick.
+        </div>
+
+        {/* bottom mono row */}
+        <div
+          style={{ display: "flex", alignItems: "center", marginTop: "auto" }}
+        >
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              fontWeight: 700,
-              fontSize: 84,
-              lineHeight: 1.05,
-              color: INK,
-              letterSpacing: -1,
-              marginBottom: 24,
+              width: 34,
+              height: 14,
+              background: YELLOW,
+              border: `2px solid ${INK}`,
+              borderRadius: 3,
+              marginRight: 16,
+              transform: "rotate(-3deg)",
             }}
-          >
-            <div style={{ display: "flex" }}>Grind smarter,</div>
-            <div style={{ display: "flex" }}>
-              not&nbsp;<span style={{ color: GREEN }}>harder.</span>
-            </div>
-          </div>
-
-          {/* subline */}
+          />
           <div
             style={{
               display: "flex",
-              fontSize: 26,
-              lineHeight: 1.35,
+              fontFamily: "monospace",
+              fontSize: 22,
               color: "#4A4A3A",
-              fontFamily: "sans-serif",
-              fontWeight: 400,
-              maxWidth: 900,
-              marginBottom: 28,
             }}
           >
-            Your AI writes the questions. M.I.Ready drills you until they
-            stick.
-          </div>
-
-          {/* bottom mono row */}
-          <div style={{ display: "flex", alignItems: "center", marginTop: "auto" }}>
-            <div
-              style={{
-                display: "flex",
-                width: 34,
-                height: 14,
-                background: YELLOW,
-                border: `2px solid ${INK}`,
-                borderRadius: 3,
-                marginRight: 16,
-                transform: "rotate(-3deg)",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                fontFamily: "monospace",
-                fontSize: 22,
-                color: "#4A4A3A",
-              }}
-            >
-              free · no account · miready.vercel.app
-            </div>
+            free · no account · miready.kanhaji.dev
           </div>
         </div>
       </div>
-    ),
+    </div>,
     {
       ...size,
       fonts: displayFont

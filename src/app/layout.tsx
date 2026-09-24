@@ -36,7 +36,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "M.I.Ready — AI Quiz Maker & Adaptive MCQ Practice",
+    default: "M.I.Ready | AI Quiz Maker & Adaptive MCQ Practice",
     template: "%s | M.I.Ready",
   },
   description: SITE_DESCRIPTION,
